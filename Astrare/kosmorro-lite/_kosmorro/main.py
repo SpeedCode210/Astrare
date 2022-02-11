@@ -116,7 +116,7 @@ def output_version() -> bool:
         sys.version_info[1],
         sys.version_info[2],
     )
-    print("Kosmorro %s" % kosmorro_version)
+    print("Kosmorro Lite %s" % kosmorro_version)
     print(
         _(
             "Running on Python {python_version} "
