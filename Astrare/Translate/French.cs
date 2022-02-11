@@ -27,6 +27,7 @@ public class French : Language
         Translations = new()
         {
             {"File", "Fichier"},
+            {"Timezone (UTC+)", "Fuseau horaire (UTC+)"},
             {"Year events", "Événements de l'année"},
             {"Month events", "Événements du mois"},
             {"Moon phase", "Phase de la lune"},

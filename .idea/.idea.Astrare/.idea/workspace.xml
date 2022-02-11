@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="dotNetConsole" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Astrare: FolderProfile" type="DotNetMsBuildPublish" factoryName="Publish to IIS">
+      <riderPublish publish_profile="FolderProfile.pubxml" pubxml_path="$PROJECT_DIR$/Astrare/Properties/PublishProfiles/FolderProfile.pubxml" uuid_high="1834748809605369082" uuid_low="-8010799515139196501" />
+      <method v="2" />
+    </configuration>
+  </component>
+</project>
