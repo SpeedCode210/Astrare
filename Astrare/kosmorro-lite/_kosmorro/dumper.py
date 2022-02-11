@@ -19,25 +19,11 @@
 from abc import ABC, abstractmethod
 import datetime
 import json
-import os
-import tempfile
-import subprocess
-import shutil
-from pathlib import Path
-
-import kosmorrolib
-from termcolor import colored
 
 from kosmorrolib import AsterEphemerides, Event, EventType
 from kosmorrolib.model import ASTERS, MoonPhase
 
-from .i18n.utils import _, FULL_DATE_FORMAT, SHORT_DATETIME_FORMAT, TIME_FORMAT
-from .__version__ import __version__ as version
-from .exceptions import (
-    CompileError,
-    UnavailableFeatureError as KosmorroUnavailableFeatureError,
-)
-from .debug import debug_print
+from .i18n.utils import _, FULL_DATE_FORMAT
 
 
 class Dumper(ABC):

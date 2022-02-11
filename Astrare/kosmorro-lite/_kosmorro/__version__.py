@@ -16,11 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-__title__ = "kosmorro"
+__title__ = "kosmorro Lite"
 __description__ = "A program that computes your ephemerides"
 __url__ = "https://kosmorro.space"
-__version__ = "0.10.9"
-__author__ = "Jérôme Deuchnord"
-__author_email__ = "jerome@deuchnord.fr"
+__version__ = "0.10.10"
+__author__ = "Raouf Ould Ali"
+__author_email__ = "raouf@eclipium.xyz"
 __license__ = "AGPL"
-__copyright__ = "Copyright 2021 Jérôme Deuchnord"
+__copyright__ = "Copyright 2022 Raouf Ould Ali"
