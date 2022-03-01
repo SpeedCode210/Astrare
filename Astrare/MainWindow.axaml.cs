@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
@@ -126,10 +125,12 @@ public partial class MainWindow : Window
 
 
                 //Affichage des phases lunaires
-                ActualMoonImage.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/Resources/MoonPhases/" +
-                                                    _currentData.moon_phase.phase.ToString().ToLower()
-                                                        .Replace("_", "-") +
-                                                    ".png");
+                ActualMoonImage.Source = new Bitmap(
+                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                    "/Resources/MoonPhases/" +
+                    _currentData.moon_phase.phase.ToString().ToLower()
+                        .Replace("_", "-") +
+                    ".png");
                 ActualMoonName.Content = MoonPhase.TypeToString(_currentData.moon_phase.phase);
                 if (_currentData.moon_phase.time != null)
                 {
@@ -143,10 +144,12 @@ public partial class MainWindow : Window
 
                 if (_currentData.moon_phase.next != null)
                 {
-                    NextMoonImage.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/Resources/MoonPhases/" +
-                                                      _currentData.moon_phase.next.phase.ToString().ToLower()
-                                                          .Replace("_", "-") +
-                                                      ".png");
+                    NextMoonImage.Source = new Bitmap(
+                        System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                        "/Resources/MoonPhases/" +
+                        _currentData.moon_phase.next.phase.ToString().ToLower()
+                            .Replace("_", "-") +
+                        ".png");
                     NextMoonName.Content = MoonPhase.TypeToString(_currentData.moon_phase.next.phase);
 
                     if (_currentData.moon_phase.next.time != null)
@@ -161,7 +164,9 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    NextMoonImage.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/Resources/MoonPhases/unknown.png");
+                    NextMoonImage.Source =
+                        new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly()
+                            .Location) + "/Resources/MoonPhases/unknown.png");
                     NextMoonName.Content = "Unknown";
                     NextMoonDate.Content = "";
                 }
@@ -186,11 +191,13 @@ public partial class MainWindow : Window
         }
 
 
-        var regex = new Regex("Kosmorro Lite [\\d]+\\.[\\d]+\\.[\\d]+");
+        var regex = new Regex("Kosmorro Lite [\\d]+\\.[\\d]+\\.?[\\d]*");
         //On essaye d'obtenir la version de kosmorro installée
 
-        var cmd = "cd {/d} " + System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/kosmorro-lite && " + PythonHelper.GetPythonCommand() +
-                                                             " kosmorro-lite -v";
+        var cmd = "cd {/d} " +
+                  System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                  "/kosmorro-lite && " + PythonHelper.GetPythonCommand() +
+                  " kosmorro-lite -v";
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -212,9 +219,9 @@ public partial class MainWindow : Window
             ShowMessage("Kosmorro is not installed", "Kosmorro is being installed, please wait until it finishes.");
             var th = new Thread(() =>
             {
-                ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.4");
+                ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.5");
                 ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install python-dateutil");
-                
+
                 commandResult = regex.Match(ShellHelper.Bash(cmd));
                 if (!commandResult.Success || commandResult.Length < 1)
                 {
@@ -235,7 +242,10 @@ public partial class MainWindow : Window
             th.Start();
         }
         else
+        {
+            ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.5");
             callback.Invoke();
+        }
     }
 
     private void ShowMessage(string title, string description)
@@ -283,7 +293,7 @@ public partial class MainWindow : Window
     {
         if (_currentData is null)
             return;
-        
+
         var saveFileBox = new SaveFileDialog
         {
             Title = Language.Current.Translate("Save Document As...")
@@ -329,219 +339,306 @@ public partial class MainWindow : Window
         _languageChanged = true;
     }
 
-    private async void YearEvents_OnClick(object? sender, RoutedEventArgs e)
+    private void YearEvents_OnClick(object? sender, RoutedEventArgs e)
     {
-        var saveFileBox = new SaveFileDialog
+        EventList window = null;
+        window = new EventList(false, Language.Current.Translate("Year events"), () => { Execute(); });
+        window.Show();
+
+        async void Execute()
         {
-            Title = Language.Current.Translate("Save Document As...")
-        };
-        var filters = new List<FileDialogFilter>();
-        var filter = new FileDialogFilter();
-        var extension = new List<string> {"pdf"};
-        filter.Extensions = extension;
-        filter.Name = "Document Files";
-        filters.Add(filter);
-        saveFileBox.Filters = filters;
+            if (window is null)
+                return;
 
-        saveFileBox.DefaultExtension = "pdf";
+            var acceptedEvents = window.GetEvents();
+            var showPlanets = window.ShowPlanetIcons();
+            var date = window.GetMonthAndYear();
+            var fontSize = window.GetFontSize();
+            window.Close();
 
-        var fileName = await saveFileBox.ShowAsync(this);
-
-        if (fileName is null)
-            return;
-
-        if (!fileName.EndsWith(".pdf"))
-            fileName += ".pdf";
-
-        ShowMessage("Calculating events 0%", "Please wait until the process finishes");
-        new Thread(() =>
-        {
-            var dates = GetDatesOfYear(_currentDate.Year);
-            var events = new List<Event>();
-            for (int i = 0; i < dates.Length; i++)
+            var saveFileBox = new SaveFileDialog
             {
-                try
+                Title = Language.Current.Translate("Save Document As..."),
+                DefaultExtension = "pdf",
+                Filters = new List<FileDialogFilter>()
                 {
-                    var data =
-                        KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                            Settings.Current.Longitude, (int) TimeZonePicker.Value);
-                    foreach (var ev in data.events)
-                        events.Add(ev);
-                    if (data.ephemerides[5].rise_time is null)
-                        Console.WriteLine(dates[i].ToString("dd/MM/yyyy"));
-                    if (data.moon_phase.time is not null && data.moon_phase.time!.Value.Date == dates[i])
-                        events.Add(new()
-                        {
-                            details = new()
+                    new()
+                    {
+                        Extensions = new List<string> {"pdf"},
+                        Name = "PDF Document"
+                    },
+                    new()
+                    {
+                        Extensions = new List<string> {"txt"},
+                        Name = "TXT File"
+                    },
+                }
+            };
+
+
+            var fileName = await saveFileBox.ShowAsync(this);
+
+            if (fileName is null)
+                return;
+
+
+            ShowMessage("Calculating events 0%", "Please wait until the process finishes");
+            new Thread(() =>
+            {
+                var dates = GetDatesOfYear(date.Year);
+                var events = new List<Event>();
+                for (int i = 0; i < dates.Length; i++)
+                {
+                    try
+                    {
+                        var data =
+                            KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+
+                        foreach (var ev in data.events)
+                            if (acceptedEvents.Contains(ev.EventType))
+                                events.Add(ev);
+
+                        if (acceptedEvents.Contains(EventTypes.MOON_PHASE) && data.moon_phase.time is not null &&
+                            data.moon_phase.time!.Value.Date == dates[i])
+                            events.Add(new()
                             {
-                                {"phase", data.moon_phase}
-                            },
-                            EventType = EventTypes.MOON_PHASE,
-                            starts_at = data.moon_phase.time!.Value,
-                            objects = Array.Empty<Models.Object>()
-                        });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
+                                details = new()
+                                {
+                                    {"phase", data.moon_phase}
+                                },
+                                EventType = EventTypes.MOON_PHASE,
+                                starts_at = data.moon_phase.time!.Value,
+                                objects = Array.Empty<Models.Object>()
+                            });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
+                    var i1 = i;
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
+                            "Please wait until the process finishes");
+                    });
                 }
 
-                var i1 = i;
-                Dispatcher.UIThread.InvokeAsync(() =>
+                if (fileName.EndsWith("pdf"))
                 {
-                    ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
-                        "Please wait until the process finishes");
-                });
-            }
+                    EventsDrawer.DrawToDocument(
+                        Language.Current.Translate("Astronomical events for {0}", _currentDate.ToString("yyyy")),
+                        Language.Current.Translate(
+                            $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
+                            ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
+                        events.ToArray(),
+                        fileName, showPlanets, fontSize);
+                }
+                else if (fileName.EndsWith("txt"))
+                {
+                    EventsDrawer.DrawToTextFile(
+                        Language.Current.Translate("Astronomical events for {0}", _currentDate.ToString("yyyy")),
+                        Language.Current.Translate(
+                            $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
+                            ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
+                        events.ToArray(),
+                        fileName);
+                }
 
-            EventsDrawer.DrawToDocument(
-                Language.Current.Translate("Astronomical events for {0}", _currentDate.ToString("yyyy")),
-                Language.Current.Translate(
-                    $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
-                    ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value), events.ToArray(),
-                fileName);
-            Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
-            OpenFile(fileName);
-        }).Start();
+                Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
+                OpenFile(fileName);
+            }).Start();
+        }
     }
 
-    private async void MonthEvents_OnClick(object? sender, RoutedEventArgs e)
+    private void MonthEvents_OnClick(object? sender, RoutedEventArgs e)
     {
-        var saveFileBox = new SaveFileDialog
+        EventList window = null;
+        window = new EventList(true, Language.Current.Translate("Month events"), () => { Execute(); });
+        window.Show();
+
+        async void Execute()
         {
-            Title = Language.Current.Translate("Save Document As...")
-        };
-        var filters = new List<FileDialogFilter>();
-        var filter = new FileDialogFilter();
-        var extension = new List<string> {"pdf"};
-        filter.Extensions = extension;
-        filter.Name = "Document Files";
-        filters.Add(filter);
-        saveFileBox.Filters = filters;
+            if (window is null)
+                return;
 
-        saveFileBox.DefaultExtension = "pdf";
+            var acceptedEvents = window.GetEvents();
+            var showPlanets = window.ShowPlanetIcons();
+            var date = window.GetMonthAndYear();
+            var fontSize = window.GetFontSize();
+            window.Close();
 
-        var fileName = await saveFileBox.ShowAsync(this);
-
-        if (fileName is null)
-            return;
-
-        if (!fileName.EndsWith(".pdf"))
-            fileName += ".pdf";
-
-        ShowMessage("Calculating events 0%", "Please wait until the process finishes");
-        new Thread(() =>
-        {
-            var dates = GetDatesOfMonth(_currentDate.Year, _currentDate.Month);
-            var events = new List<Event>();
-
-            for (int i = 0; i < dates.Length; i++)
+            var saveFileBox = new SaveFileDialog
             {
-                try
+                Title = Language.Current.Translate("Save Document As..."),
+                DefaultExtension = "pdf",
+                Filters = new List<FileDialogFilter>()
                 {
-                    var data =
-                        KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                            Settings.Current.Longitude, (int) TimeZonePicker.Value);
-                    foreach (var ev in data.events)
-                        events.Add(ev);
-                    if (data.moon_phase.time is not null && data.moon_phase.time!.Value.Date == dates[i])
-                        events.Add(new()
-                        {
-                            details = new()
+                    new()
+                    {
+                        Extensions = new List<string> {"pdf"},
+                        Name = "PDF Document"
+                    },
+                    new()
+                    {
+                        Extensions = new List<string> {"txt"},
+                        Name = "TXT File"
+                    },
+                }
+            };
+
+            var fileName = await saveFileBox.ShowAsync(this);
+
+            if (fileName is null)
+                return;
+
+
+            ShowMessage("Calculating events 0%", "Please wait until the process finishes");
+            new Thread(() =>
+            {
+                var dates = GetDatesOfMonth(date.Year, date.Month);
+                var events = new List<Event>();
+
+                for (int i = 0; i < dates.Length; i++)
+                {
+                    try
+                    {
+                        var data =
+                            KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                        foreach (var ev in data.events)
+                            if (acceptedEvents.Contains(ev.EventType))
+                                events.Add(ev);
+                        if (acceptedEvents.Contains(EventTypes.MOON_PHASE) && data.moon_phase.time is not null &&
+                            data.moon_phase.time!.Value.Date == dates[i])
+                            events.Add(new()
                             {
-                                {"phase", data.moon_phase}
-                            },
-                            EventType = EventTypes.MOON_PHASE,
-                            starts_at = data.moon_phase.time!.Value,
-                            objects = Array.Empty<Models.Object>()
-                        });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
+                                details = new()
+                                {
+                                    {"phase", data.moon_phase}
+                                },
+                                EventType = EventTypes.MOON_PHASE,
+                                starts_at = data.moon_phase.time!.Value,
+                                objects = Array.Empty<Models.Object>()
+                            });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
+                    var i1 = i;
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
+                            "Please wait until the process finishes");
+                    });
                 }
 
-                var i1 = i;
-                Dispatcher.UIThread.InvokeAsync(() =>
+                if (fileName.EndsWith("pdf"))
                 {
-                    ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
-                        "Please wait until the process finishes");
-                });
-            }
+                    EventsDrawer.DrawToDocument(
+                        Language.Current.Translate("Astronomical events for {0}",
+                            Language.Current.Months[_currentDate.Month - 1] + " " + _currentDate.ToString("yyyy")),
+                        Language.Current.Translate(
+                            $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
+                            ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
+                        events.OrderBy(evnt => evnt.starts_at.ToBinary()).ToArray(), fileName, showPlanets, fontSize);
+                }
+                else if (fileName.EndsWith("txt"))
+                {
+                    EventsDrawer.DrawToTextFile(
+                        Language.Current.Translate("Astronomical events for {0}",
+                            Language.Current.Months[_currentDate.Month - 1] + " " + _currentDate.ToString("yyyy")),
+                        Language.Current.Translate(
+                            $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
+                            ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
+                        events.OrderBy(evnt => evnt.starts_at.ToBinary()).ToArray(), fileName);
+                }
 
-            EventsDrawer.DrawToDocument(
-                Language.Current.Translate("Astronomical events for {0}",
-                    Language.Current.Months[_currentDate.Month - 1] + " " + _currentDate.ToString("yyyy")),
-                Language.Current.Translate(
-                    $"Latitude : {Settings.Current.Latitude}° | Longitude : {Settings.Current.Longitude}° | UTC" +
-                    ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
-                events.OrderBy(evnt => evnt.starts_at.ToBinary()).ToArray(), fileName);
-            Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
-            OpenFile(fileName);
-        }).Start();
+                Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
+                OpenFile(fileName);
+            }).Start();
+        }
     }
 
-    private async void YearAlmanach_OnClick(object? sender, RoutedEventArgs e)
+    private void YearAlmanach_OnClick(object? sender, RoutedEventArgs e)
     {
-        var saveFileBox = new SaveFileDialog
+        AlmanachGenerator window = null;
+        window = new AlmanachGenerator(() => { Execute(); });
+        window.Show();
+
+        async void Execute()
         {
-            Title = Language.Current.Translate("Save Document As...")
-        };
-        var filters = new List<FileDialogFilter>();
-        var filter = new FileDialogFilter();
-        var extension = new List<string> {"svg"};
-        filter.Extensions = extension;
-        filter.Name = "Document Files";
-        filters.Add(filter);
-        saveFileBox.Filters = filters;
-
-        saveFileBox.DefaultExtension = "svg";
-
-        var fileName = await saveFileBox.ShowAsync(this);
-
-        if (fileName is null)
-            return;
-
-        if (!fileName.EndsWith(".svg"))
-            fileName += ".svg";
-
-        ShowMessage("Calculating events 0%", "Please wait until the process finishes");
-        new Thread(() =>
-        {
-            var dates = GetDatesOfYear(_currentDate.Year, true);
-            var datas = new List<GlobalData>();
-
-            for (int i = 0; i < dates.Length; i++)
+            var date = window.GetYearDate();
+            var moonEphs = window.GetIfMoonEphemerides();
+            var ecoMode = window.GetIfEconomic();
+            var dayNight = window.GetIfDayNight();
+            var planetsLines = window.PlanetsLines();
+            
+            window.Close();
+            
+            var saveFileBox = new SaveFileDialog
             {
-                try
+                Title = Language.Current.Translate("Save Document As...")
+            };
+            var filters = new List<FileDialogFilter>();
+            var filter = new FileDialogFilter();
+            var extension = new List<string> {"pdf"};
+            filter.Extensions = extension;
+            filter.Name = "PDF Document";
+            filters.Add(filter);
+            saveFileBox.Filters = filters;
+
+            saveFileBox.DefaultExtension = "pdf";
+
+            var fileName = await saveFileBox.ShowAsync(this);
+
+            if (fileName is null)
+                return;
+
+
+            ShowMessage("Calculating events 0%", "Please wait until the process finishes");
+            new Thread(() =>
+            {
+                var dates = GetDatesOfYear(date.Year);
+                var datas = new List<GlobalData>();
+
+                for (int i = 0; i < dates.Length; i++)
                 {
-                    var data =
-                        KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                            Settings.Current.Longitude, (int) TimeZonePicker.Value);
-                    datas.Add(data);
+                    try
+                    {
+                        var data =
+                            KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                        datas.Add(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+
+                    var i1 = i;
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
+                            "Please wait until the process finishes");
+                    });
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
 
-                var i1 = i;
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    ShowMessage($"Calculating events {100 * i1 / dates.Length}%",
-                        "Please wait until the process finishes");
-                });
-            }
 
-            AlmanachDrawer.SaveSvg(datas.ToArray(), fileName,
-                Language.Current.Translate("Graphic almanach - " + _currentDate.Year),
-                Language.Current.Translate(
-                    $"Latitude : {Settings.Current.Latitude.ToString("F1")}° | Longitude : {Settings.Current.Longitude.ToString("F1")}° | UTC" +
-                    ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value));
+                AlmanachDrawer.SavePdf(datas.ToArray(), dates, fileName,
+                    Language.Current.Translate("Graphic almanach - " + _currentDate.Year),
+                    Language.Current.Translate(
+                        $"Latitude : {Settings.Current.Latitude.ToString("F1")}° | Longitude : {Settings.Current.Longitude.ToString("F1")}° | UTC" +
+                        ((int) TimeZonePicker.Value >= 0 ? "+" : "-") + (int) TimeZonePicker.Value),
+                    dayNight, moonEphs, planetsLines, ecoMode);
 
-            Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
-            OpenFile(fileName);
-        }).Start();
+                Dispatcher.UIThread.InvokeAsync(() => { MessageView.IsEnabled = MessageView.IsVisible = false; });
+                OpenFile(fileName);
+            }).Start();
+        }
     }
 
     private void OpenFile(string fileName)

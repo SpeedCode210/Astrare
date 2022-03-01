@@ -6,6 +6,9 @@
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <PackageVersion>1.1</PackageVersion>
+        <PackageProjectUrl>https://github.com/SpeedCode210/Astrare</PackageProjectUrl>
+        <AssemblyVersion>1.1</AssemblyVersion>
     </PropertyGroup>
     <PropertyGroup>
         <AvaloniaNameGeneratorBehavior>InitializeComponent</AvaloniaNameGeneratorBehavior>
@@ -121,10 +124,10 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Resources\template.css">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="Resources\template.html">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="Resources\instrument.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -165,5 +168,11 @@
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="astrareIcon.ico" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="AlmanachGenerator.axaml.cs">
+        <DependentUpon>AlmanachGenerator.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

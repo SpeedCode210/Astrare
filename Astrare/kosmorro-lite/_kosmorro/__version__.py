@@ -19,7 +19,7 @@
 __title__ = "kosmorro Lite"
 __description__ = "A program that computes your ephemerides"
 __url__ = "https://kosmorro.space"
-__version__ = "0.10.10"
+__version__ = "0.11"
 __author__ = "Raouf Ould Ali"
 __author_email__ = "raouf@eclipium.xyz"
 __license__ = "AGPL"

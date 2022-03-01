@@ -22,13 +22,13 @@ import sys
 from kosmorrolib import Position, get_ephemerides, get_events, get_moon_phase
 from kosmorrolib.__version__ import __version__ as kosmorrolib_version
 from kosmorrolib.exceptions import OutOfRangeDateError
-from datetime import date
+from datetime import date, timedelta
 
 from . import dumper, environment, debug
 from .date import parse_date
 from .__version__ import __version__ as kosmorro_version
 from .exceptions import UnavailableFeatureError, OutOfRangeDateError as DateRangeError
-from _kosmorro.i18n.utils import _, SHORT_DATE_FORMAT
+from _kosmorro.i18n.utils import _
 
 
 def main():
@@ -60,11 +60,16 @@ def main():
         timezone = 0
 
     try:
-        output = get_information(
-            compute_date,
-            position,
-            timezone,
-        )
+        output = "["
+        for i in range(1, args.days+1):
+            if i != 1:
+                output = output + ","
+            output = output + str(get_information(
+                compute_date + timedelta(days=i-1),
+                position,
+                timezone,
+            ))
+        output = output + "]"
     except UnavailableFeatureError as error:
         print(error.msg)
         debug.debug_print(error)
@@ -189,6 +194,16 @@ def get_args():
         help=_(
             "The timezone to display the hours in (e.g. 2 for UTC+2 or -3 for UTC-3). "
             "Can also be set in the KOSMORRO_TIMEZONE environment variable."
+        ),
+    )
+    parser.add_argument(
+        "--days",
+        "-n",
+        type=int,
+        default=1,
+        help=_(
+            "The number of days to compute "
+            "Defaults to 1."
         ),
     )
     parser.add_argument(

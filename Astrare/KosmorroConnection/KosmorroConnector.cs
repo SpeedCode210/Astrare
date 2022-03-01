@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -27,56 +26,46 @@ public static class KosmorroConnector
             cmd = cmd.Replace(" {/d}", "");
         }
 
-        Debug.WriteLine(cmd);
         var json = ShellHelper.Bash(cmd).Replace("\"object\"", "\"aster\"");
-        Debug.WriteLine(json);
         try
         {
             
-            var result = JsonSerializer.Deserialize<GlobalData>(json, new JsonSerializerOptions()
+            var result = JsonSerializer.Deserialize<GlobalData[]>(json, new JsonSerializerOptions()
             {
                 Converters = {
                     new JsonStringEnumConverter()
                 }
             });
             
-            if (result is null)
+            if (result is null || result.Length < 1)
                 throw new Exception("Can't get data from Kosmorro.");
 
-            List<AsterEphemerides> toCorrect = new();
 
-            foreach (var eph in result.ephemerides)
+            if (true)
             {
-                if (eph.rise_time is null || eph.set_time is null)
+                foreach (var ev in result[0].events)
                 {
-                    toCorrect.Add(eph);
+                    if(ev.details != null)
+                        ev.details["north_hemispher"] = lat >= 0;
                 }
-            }
-            
-            if(toCorrect.Count == 0)
-                return result;
-
-            var result2 = GetFromKosmorro(date, lat, lon, timezone - 1);
-            
-            foreach (var eph in result2.ephemerides)
-            {
-                foreach (var eph2 in toCorrect)
+                foreach (var eph in result[0].ephemerides)
                 {
-                    if (eph2.aster.identifier == eph.aster.identifier)
+                    if (!(eph.aster.identifier is ObjectIdentifier.SUN or ObjectIdentifier.MOON))
+                        continue;
+                    if (eph.rise_time.GetValueOrDefault().Date.DayOfYear != date.GetValueOrDefault().DayOfYear)
                     {
-                        if (eph2.rise_time is null && eph.rise_time != null && eph.rise_time!.Value.AddHours(1).Day == date!.Value.Day)
-                        {
-                            eph2.rise_time = eph.rise_time!.Value.AddHours(1);
-                        }
-                        if (eph2.set_time is null && eph.set_time != null && eph.set_time!.Value.AddHours(1).Day == date!.Value.Day)
-                        {
-                            eph2.set_time = eph.set_time!.Value.AddHours(1);
-                        }
+                        eph.rise_time = null;
+                    }
+                
+                    if (eph.set_time.GetValueOrDefault().Date.DayOfYear != date.GetValueOrDefault().DayOfYear)
+                    {
+                        eph.set_time = null;
                     }
                 }
             }
+            
 
-            return result;
+            return result[0];
 
         }
         catch (JsonException)

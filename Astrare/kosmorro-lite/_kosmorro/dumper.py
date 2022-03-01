@@ -22,8 +22,34 @@ import json
 
 from kosmorrolib import AsterEphemerides, Event, EventType
 from kosmorrolib.model import ASTERS, MoonPhase
+from kosmorrolib.enum import SeasonType, LunarEclipseType
 
 from .i18n.utils import _, FULL_DATE_FORMAT
+
+
+def serialize_season_change(event) -> dict:
+    event.details['season'] = event.details['season'].name
+    return {
+        "objects": [object.serialize() for object in event.objects],
+        "EventType": event.event_type.name,
+        "starts_at": event.start_time.isoformat(),
+        "ends_at": event.end_time.isoformat() if event.end_time is not None else None,
+        "details": event.details,
+    }
+
+def serialize_lunar_eclipse(event) -> dict:
+
+    event.details['type'] = event.details['type'].name
+
+    event.details['maximum'] = event.details['maximum'].isoformat() if event.details['maximum'] is not None else None
+
+    return {
+        "objects": [object.serialize() for object in event.objects],
+        "EventType": event.event_type.name,
+        "starts_at": event.start_time.isoformat(),
+        "ends_at": event.end_time.isoformat() if event.end_time is not None else None,
+        "details": event.details,
+    }
 
 
 class Dumper(ABC):
@@ -75,6 +101,8 @@ class JsonDumper(Dumper):
         EventType.MAXIMAL_ELONGATION,
         EventType.PERIGEE,
         EventType.APOGEE,
+        EventType.LUNAR_ECLIPSE,
+        EventType.SEASON_CHANGE
     ]
 
     def to_string(self):
@@ -93,4 +121,9 @@ class JsonDumper(Dumper):
             if event.event_type not in self.SUPPORTED_EVENTS:
                 continue
 
-            yield event.serialize()
+            if event.event_type == EventType.SEASON_CHANGE:
+                yield serialize_season_change(event)
+            elif event.event_type == EventType.LUNAR_ECLIPSE:
+                yield serialize_lunar_eclipse(event)
+            else:
+                yield event.serialize()

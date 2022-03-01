@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:t="clr-namespace:Astrare.Translate.Controls"
+        mc:Ignorable="d" Width="700" Height="450"
+        x:Class="Astrare.EventList"
+        Title="Astrare - Events list" Icon="astrareIcon.png" Background="#121010">
+    <StackPanel Margin="10">
+        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
+            <t:Label VerticalAlignment="Center" Content="Show planets icons" Margin="0,5,0,5" />
+            <ToggleSwitch VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Name="PlanetIcons" IsChecked="True"
+                          HorizontalAlignment="Right" OffContent="" OnContent="" Margin="0,5,0,5" />
+            <t:Label VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Content="Text size" Margin="0,5,0,5" />
+            <NumericUpDown HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Value="14" Margin="0,5,0,5" Name="TextSize" />
+            <t:Label VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Content="Month - Year" Margin="0,5,0,5" />
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <ComboBox VerticalAlignment="Center" Margin="0,5,5,5" Name="Month"/>
+                <NumericUpDown VerticalAlignment="Center" Minimum="1900" Maximum="2052" Value="2022" Margin="0,5,0,5" Name="Year" />
+            </StackPanel>
+        </Grid>
+        <t:Label Content="Shown events" HorizontalAlignment="Center"/>
+        <Grid HorizontalAlignment="Center" ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+            <t:Label Content="Oppositions" Grid.Row="0" Grid.Column="1" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="0" Grid.Column="0" Margin="0,5,2,5" Name="Oppositions" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Conjunctions" Grid.Row="1" Grid.Column="1" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="1" Grid.Column="0" Margin="0,5,2,5" Name="Conjunctions" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Occultations" Grid.Row="2" Grid.Column="1" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="2" Grid.Column="0" Margin="0,5,2,5" Name="Occultations" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Maximal elongations" Grid.Row="3" Grid.Column="1" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="3" Grid.Column="0" Margin="0,5,2,5" Name="MaxElong" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Perigees" Grid.Row="4" Grid.Column="1" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="4" Grid.Column="0" Margin="0,5,2,5" Name="Perigee" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Apogees" Grid.Row="0" Grid.Column="3" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="0" Grid.Column="2" Margin="0,5,2,5" Name="Apogees" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Season changes" Grid.Row="1" Grid.Column="3" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="1" Grid.Column="2" Margin="0,5,2,5" Name="Seasons" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Moon eclipses" Grid.Row="2" Grid.Column="3" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="2" Grid.Column="2" Margin="0,5,2,5" Name="MoonEclipses" HorizontalAlignment="Left"/>
+            
+            <t:Label Content="Moon phases" Grid.Row="3" Grid.Column="3" Margin="0,5,5,5"/>
+            <CheckBox IsChecked="True" Grid.Row="3" Grid.Column="2" Margin="0,5,2,5" Name="MoonPhases" HorizontalAlignment="Left"/>
+        </Grid>
+        <t:Button Content="Generate" HorizontalAlignment="Center" Margin="10" Name="Generate" Padding="40,10"/>
+    </StackPanel>
+</Window>

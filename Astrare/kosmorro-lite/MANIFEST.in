@@ -1,0 +1,2 @@
+recursive-include _kosmorro/locales *
+recursive-include _kosmorro/assets *

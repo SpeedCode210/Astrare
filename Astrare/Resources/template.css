@@ -1,14 +1,26 @@
+@font-face {
+    font-family: 'NimbusSanLReg';
+    src: url('./NimbusSanL-Reg.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'NimbusSanLBol';
+    src: url('./NimbusSanL-Bol.ttf') format('truetype');
+}
+
 body {
     margin-right: 30px;
     margin-left: 30px;
-    font-family: "Helvetica Neue", "Nimbus Sans L", sans-serif;
+    font-family: NimbusSanLReg;
     font-size: 11px;
     line-height: 21px;
 }
 
+
 h1 {
-    font-size: 23px;
+    font-size: 19px;
     line-height: 47px;
+    font-family: NimbusSanLBol;
 }
 
 .logo {
@@ -16,26 +28,38 @@ h1 {
     height: 56px;
 }
 
-table{
-    width: 100%;
+table {
+    margin-left: auto;
+    margin-right: auto;
 }
 
-h3, ul{
-    margin: 0px;
-}
-
-th{
+table td {
     text-align: left;
-    vertical-align: middle;
 }
 
-.textth{
+table caption {
+    font-weight: bold;
+}
+
+table tr#HEAD {
+    font-weight: bold;
+    text-align: center;
+    background-color: #F0F0F0;
+}
+
+h3, ul {
+    margin: 0px;
+    font-family: NimbusSanLBol;
+}
+
+
+.textth {
     padding-left: 204px;
     text-align: center;
 
 }
 
-.imgth{
+.imgth {
     width: 204px;
 }
 
@@ -49,6 +73,3 @@ th{
     text-align: center;
 }
 
-.planet{
-    width: 35px;
-}

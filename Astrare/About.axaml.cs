@@ -13,9 +13,9 @@ public partial class About : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-        this.Title = Language.Current.Translate("About");
+        this.Title = "Astrare - " + Language.Current.Translate("About");
         
-        ExecutingVersion.Text = ShellHelper.Bash("cd kosmorro-lite && " + PythonHelper.GetPythonCommand() + " kosmorro-lite --version");
+        ExecutingVersion.Text = "Using " + ShellHelper.Bash("cd kosmorro-lite && " + PythonHelper.GetPythonCommand() + " kosmorro-lite --version");
         
     }
 
