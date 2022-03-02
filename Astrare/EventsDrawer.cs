@@ -47,8 +47,11 @@ public static class EventsDrawer
         }
 
         html += "</body></html>";
+
+        var props = new ConverterProperties();
+        props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
         
-        HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName));
+        HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
     }
     
     

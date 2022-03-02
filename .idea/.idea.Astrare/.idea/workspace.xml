@@ -4,34 +4,7 @@
     <projectFile>Astrare/Astrare.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89d3ff57-108b-4d6a-9293-fe346156f7ee" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.Astrare/.idea/avalonia.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Astrare/AlmanachGenerator.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Astrare/AlmanachGenerator.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Astrare/EventList.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Astrare/EventList.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Astrare/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Astrare/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/About.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/About.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/About.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/About.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/AlmanachDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/AlmanachDrawer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Astrare.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Astrare.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/EventsDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/EventsDrawer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/GraphDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/GraphDrawer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/KosmorroConnection/KosmorroConnector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/KosmorroConnection/KosmorroConnector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/MainWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/MainWindow.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/MainWindow.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/MainWindow.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Models/AsterEphemerides.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Models/AsterEphemerides.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Models/DisplayEphemerides.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Models/DisplayEphemerides.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Models/Event.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Models/Event.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/PdfDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/PdfDrawer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Resources/template.css" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Resources/template.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Resources/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Resources/template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/Translate/French.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/Translate/French.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/__version__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/__version__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/dumper.py" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/dumper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/kosmorro-lite/_kosmorro/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Astrare/kosmorro-lite/kosmorro-lite" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/kosmorro-lite/kosmorro-lite" afterDir="false" />
-    </list>
+    <list default="true" id="89d3ff57-108b-4d6a-9293-fe346156f7ee" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,6 +32,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Astrare-Linux" />
     <property name="settings.editor.selected.configurable" value="dotNetConsole" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -120,6 +94,7 @@
       <workItem from="1646148092782" duration="5781000" />
       <workItem from="1646156197477" duration="1256000" />
       <workItem from="1646157524843" duration="4681000" />
+      <workItem from="1646167599766" duration="828000" />
     </task>
     <servers />
   </component>

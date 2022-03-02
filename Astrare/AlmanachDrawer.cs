@@ -491,18 +491,23 @@ public static class AlmanachDrawer
             str, new Font(NimbusRegular, 40),
             new SolidColourBrush(Colours.Purple), TextBaselines.Middle);
 
-        doc.Pages.Last().SaveAsSVG("./alma.svg", SVGContextInterpreter.TextOptions.ConvertIntoPaths);
+        doc.Pages.Last().SaveAsSVG(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.svg", SVGContextInterpreter.TextOptions.ConvertIntoPaths);
 
         // Read first frame of svg image
-        using (var image = new MagickImage("./alma.svg"))
+        using (var image = new MagickImage(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.svg"))
         {
             // Save frame as png
-            image.Write("./alma.png");
+            image.Write(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.png");
         }
         
 
         var html = "<html><head><style>@page {margin: 0.5cm; }body{margin:0px;text-align:center}img{height:1100px}</style></head><body><img src=\"alma.png\"></body></html>";
-        HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName));
+
+        var props = new ConverterProperties();
+        props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
+
+        HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
     }
 
     private static int HourToMinutes(DateTime time)
