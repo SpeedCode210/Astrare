@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -10,12 +9,22 @@ namespace Astrare.KosmorroConnection;
 
 public static class KosmorroConnector
 {
-    public static GlobalData GetFromKosmorro(DateTime? date, decimal lat, decimal lon, int timezone)
+    public static GlobalData GetFromKosmorro(DateTime? date, decimal lat, decimal lon, int timezone, DataGetMode mode = DataGetMode.Default)
     {
         date ??= DateTime.Now;
         var cmd = ("cd {/d} " + System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + $"/kosmorro-lite && {PythonHelper.GetPythonCommand()} kosmorro-lite -lat {lat.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -lon {lon.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -d " +
             ((DateTime)date).ToString("yyyy-MM-dd") +
             " -t " + timezone);
+        switch (mode)
+        {
+            case DataGetMode.Events:
+                cmd += " -eph -co";
+                break;
+            case DataGetMode.Almanach:
+                cmd += " -ev -co";
+                break;
+        }
+            
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -73,4 +82,10 @@ public static class KosmorroConnector
             throw new Exception("Can't parse data from Kosmorro, please see the console for more information.");
         }
     }
+}
+
+public enum DataGetMode{
+    Default,
+    Events,
+    Almanach
 }

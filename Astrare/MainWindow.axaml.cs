@@ -12,6 +12,7 @@ using Astrare.Models;
 using Astrare.Translate;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -56,6 +57,24 @@ public partial class MainWindow : Window
             CalculsDatePicker.SelectedDate = DateTimeOffset.Now;
             ReloadData();
         });
+
+        SkychartTime.SelectedTimeChanged += SkychartTimeOnSelectedTimeChanged;
+        KeyDown += OnKeyDown;
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.F11)
+        {
+            WindowState = WindowState is WindowState.FullScreen ? WindowState.Normal : WindowState.FullScreen;
+        }
+    }
+
+    private void SkychartTimeOnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
+        Skychart.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                                     "/skychart.png");
     }
 
     private void ReloadData()
@@ -177,6 +196,10 @@ public partial class MainWindow : Window
                     eventsDisplay.Add(new(e));
 
                 EventsGrid.Items = eventsDisplay;
+                
+                SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
+                Skychart.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                                             "/skychart.png");
             });
         }).Start();
     }
@@ -393,7 +416,7 @@ public partial class MainWindow : Window
                     {
                         var data =
                             KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value, DataGetMode.Events);
 
                         foreach (var ev in data.events)
                             if (acceptedEvents.Contains(ev.EventType))
@@ -506,7 +529,7 @@ public partial class MainWindow : Window
                     {
                         var data =
                             KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value, DataGetMode.Events);
                         foreach (var ev in data.events)
                             if (acceptedEvents.Contains(ev.EventType))
                                 events.Add(ev);
@@ -611,7 +634,7 @@ public partial class MainWindow : Window
                     {
                         var data =
                             KosmorroConnector.GetFromKosmorro(dates[i], Settings.Current.Latitude,
-                                Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                                Settings.Current.Longitude, (int) TimeZonePicker.Value, DataGetMode.Almanach);
                         datas.Add(data);
                     }
                     catch (Exception ex)
@@ -690,5 +713,45 @@ public partial class MainWindow : Window
         }
 
         return dates.ToArray();
+    }
+
+    private async void SkychartPDF_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_currentData is null)
+            return;
+
+        var saveFileBox = new SaveFileDialog
+        {
+            Title = Language.Current.Translate("Save Document As...")
+        };
+        var filters = new List<FileDialogFilter>();
+        var filter = new FileDialogFilter();
+        var extension = new List<string> {"pdf"};
+        filter.Extensions = extension;
+        filter.Name = "Document Files";
+        filters.Add(filter);
+        saveFileBox.Filters = filters;
+
+        saveFileBox.DefaultExtension = "pdf";
+
+        var fileName = await saveFileBox.ShowAsync(this);
+
+        if (fileName is null)
+            return;
+
+        if (!fileName.EndsWith(".pdf"))
+            fileName += ".pdf";
+        try
+        {
+            SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,false, false);
+            SkychartPdfDrawer.DrawToDocument(_currentData, fileName, (int) TimeZonePicker.Value, SkychartTime.SelectedTime!.Value);
+            OpenFile(fileName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        
+
     }
 }

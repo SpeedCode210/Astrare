@@ -58,6 +58,7 @@ public class French : Language
             {"Set/Culmination/Rise lines", "Lignes de lever/culmination/coucher"},
             {"Day/Night", "Jour/Nuit"},
             {"Planets", "Planètes"},
+            {"Skychart", "Carte du ciel"},
             {"Sun", "Soleil"},
             {"Moon", "Lune"},
             {"Mercury", "Mercure"},
@@ -80,6 +81,7 @@ public class French : Language
             {"Extra", "Extra"},
             {"About", "A propos"},
             {"Save PDF", "Enregistrer PDF"},
+            {"Skychart PDF", "Enregistrer carte du ciel"},
             {"Quit", "Quitter"},
             {"Date of ephemerides", "Date des éphémérides"},
             {"Latitude", "Latitude"},
@@ -141,6 +143,13 @@ public class French : Language
                 "Ce document synthétise les éphémérides et les événements prévus pour le {0}" +
                 ". Son but est de vous aider à préparer votre soirée d'observation. "+
                 "Toutes les heures sont données en {1}"
+            },
+            {"This document summarizes stars, constellations and other asters that are visible in the sky " 
+                + "on {0} at {1}, at latitude {2} and longitude {3}" +
+                ". t aims to help you to prepare your observation session.",
+                "Ce document synthétise les étoiles, constellations et divers astres visible dans le ciel " 
+                + "le {0} à {1}, à la latitude {2} et longitude {3}" +
+                ". Son but est de vous aider à préparer votre soirée d'observation."
             },
             {
                 "Don't forget to check the weather forecast before you go out with your equipment.",

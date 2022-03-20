@@ -5,7 +5,7 @@
         xmlns:t="clr-namespace:Astrare.Translate.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Astrare.MainWindow"
-        MinHeight="500" MinWidth="1100"
+        MinHeight="500" MinWidth="1024"
         Title="Astrare" Icon="astrareIcon.png" Background="#121010">
     <Grid>
         <DockPanel Name="MainView">
@@ -14,6 +14,7 @@
                 <Menu>
                     <t:MenuItem Header="_File">
                         <t:MenuItem Header="_Save PDF" Click="SavePDF_OnClick"/>
+                        <t:MenuItem Header="_Skychart PDF" Click="SkychartPDF_OnClick"/>
                         <t:MenuItem Header="_Quit" Click="Quit_OnClick"/>
                     </t:MenuItem>
                     <t:MenuItem Header="_Extra">
@@ -49,7 +50,7 @@
                 <Border Grid.Column="1" Background="#100c0c" BorderBrush="Gray" BorderThickness="1" Margin="5"
                         CornerRadius="5">
                     <TabControl Name="RightTabControl" SelectedIndex="1">
-                        <t:TabItem Header="Table" VerticalContentAlignment="Center" FontSize="18">
+                        <t:TabItem Header="Table" VerticalContentAlignment="Center" FontSize="15">
                             <DataGrid CanUserSortColumns="True" CanUserResizeColumns="True" x:Name="EphemeridsGrid"
                                       AutoGenerateColumns="False">
                                 <DataGrid.Columns>
@@ -68,10 +69,10 @@
                             </DataGrid>
                         </t:TabItem>
 
-                        <t:TabItem Header="Graphs" VerticalContentAlignment="Center" FontSize="18">
+                        <t:TabItem Header="Graphs" VerticalContentAlignment="Center" FontSize="15">
                             <ScrollViewer Name="GraphViewer" />
                         </t:TabItem>
-                        <t:TabItem Header="Moon" VerticalContentAlignment="Center" FontSize="18">
+                        <t:TabItem Header="Moon" VerticalContentAlignment="Center" FontSize="15">
                             <StackPanel>
                                 <Grid ColumnDefinitions="100,20,*" RowDefinitions="100,25,100">
                                     <Image Grid.Column="0" Grid.Row="0" Name="ActualMoonImage"/>
@@ -89,7 +90,7 @@
                                 </Grid>
                             </StackPanel>
                         </t:TabItem>
-                        <t:TabItem Header="Events" VerticalContentAlignment="Center" FontSize="18">
+                        <t:TabItem Header="Events" VerticalContentAlignment="Center" FontSize="15">
                             <DataGrid CanUserSortColumns="True" CanUserResizeColumns="True" x:Name="EventsGrid"
                                       AutoGenerateColumns="False">
                                 <DataGrid.Columns>
@@ -109,6 +110,14 @@
                                     <t:DataGridTextColumn Header="End" Binding="{Binding End}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
+                        </t:TabItem>
+                        <t:TabItem Header="Skychart" VerticalContentAlignment="Center" FontSize="15">
+                            <Grid RowDefinitions="Auto, *">
+                                <TimePicker HorizontalAlignment="Center" SelectedTime="20:00" ClockIdentifier="24HourClock" Name="SkychartTime"/>
+                                <Image Grid.Row="1" Name="Skychart">
+                                    
+                                </Image>
+                            </Grid>
                         </t:TabItem>
                     </TabControl>
                 </Border>

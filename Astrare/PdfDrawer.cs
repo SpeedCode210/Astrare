@@ -1,10 +1,10 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using Astrare.KosmorroConnection;
 using Astrare.Models;
 using Astrare.Translate;
 using iText.Html2pdf;
 using iText.Kernel.Pdf;
-using iText.Layout.Font;
 
 namespace Astrare;
 
@@ -71,8 +71,9 @@ public static class PdfDrawer
         GraphDrawer.SaveSvg(data.ephemerides, Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/ephs.svg");
 
         var props = new ConverterProperties();
-        props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
 

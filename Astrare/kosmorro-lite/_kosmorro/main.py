@@ -29,6 +29,10 @@ from .date import parse_date
 from .__version__ import __version__ as kosmorro_version
 from .exceptions import UnavailableFeatureError, OutOfRangeDateError as DateRangeError
 from _kosmorro.i18n.utils import _
+from skyfield.api import Loader
+from skyfield_data import get_skyfield_data_path
+
+
 
 
 def main():
@@ -68,6 +72,7 @@ def main():
                 compute_date + timedelta(days=i-1),
                 position,
                 timezone,
+                args,
             ))
         output = output + "]"
     except UnavailableFeatureError as error:
@@ -88,8 +93,9 @@ def get_information(
     compute_date: date,
     position: Position,
     timezone: int,
+    args
 ) -> dumper.Dumper:
-    if position is not None:
+    if (position is not None) and args.ephemerides:
         try:
             eph = get_ephemerides(
                 for_date=compute_date, position=position, timezone=timezone
@@ -99,15 +105,44 @@ def get_information(
     else:
         eph = []
 
-    try:
-        moon_phase = get_moon_phase(for_date=compute_date, timezone=timezone)
-    except OutOfRangeDateError as error:
+    if args.moonphase:
+        try:
+            moon_phase = get_moon_phase(for_date=compute_date, timezone=timezone)
+        except OutOfRangeDateError as error:
+            moon_phase = None
+    else:
         moon_phase = None
 
-    events_list = get_events(compute_date, timezone)
+    if args.events:
+        events_list = get_events(compute_date, timezone)
+    else:
+        events_list = []
+
+    coordinates = []
+    if args.coordinates:
+        # Coordonnées equatoriales des astres
+        load = Loader(get_skyfield_data_path(),verbose=False)
+        ts = load.timescale()
+        t = ts.tt(compute_date.year, compute_date.month, compute_date.day, 12, 0)
+        planets = load('de421.bsp')
+        earth = planets['earth']
+        for aster in ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter barycenter', 'uranus barycenter',
+                      'neptune barycenter']:
+            # Load the JPL ephemeris DE421 (covers 1900-2050).
+            planet = planets[aster]
+            # What's the position of Mars, viewed from Earth?
+            astrometric = earth.at(t).observe(planet)
+            ra, dec, distance = astrometric.radec()
+            coordinates.append({
+                'aster': aster.replace(' barycenter', '').upper(),
+                'right_ascension': ra._degrees,
+                'declinaison': dec.degrees
+            })
+
 
     return dumper.JsonDumper(
         ephemerides=eph,
+        coordinates=coordinates,
         moon_phase=moon_phase,
         events=events_list,
         date=compute_date,
@@ -213,5 +248,42 @@ def get_args():
         help=_("Show debugging messages"),
     )
 
+    parser.add_argument(
+        "--ephemerides",
+        "-eph",
+        action="store_false",
+        default=True,
+        help=_(
+            "Don't compute ephemerides"
+        ),
+    )
+    parser.add_argument(
+        "--coordinates",
+        "-co",
+        action="store_false",
+        default=True,
+        help=_(
+            "Don't compute coordinates"
+        ),
+    )
+    parser.add_argument(
+        "--moonphase",
+        "-mp",
+        action="store_false",
+        default=True,
+        help=_(
+            "Don't compute moonphases"
+        ),
+    )
+    parser.add_argument(
+        "--events",
+        "-ev",
+        action="store_false",
+        default=True,
+        help=_(
+            "Don't compute events"
+        ),
+    )
 
     return parser.parse_args()
+    

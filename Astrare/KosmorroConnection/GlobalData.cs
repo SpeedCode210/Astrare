@@ -5,6 +5,7 @@ namespace Astrare.KosmorroConnection;
 public class GlobalData
 {
     public AsterEphemerides[] ephemerides { get; set; }
-    public MoonPhase moon_phase { get; set; }
+    public MoonPhase? moon_phase { get; set; }
     public Event[] events { get; set; }
+    public AsterPosition[] coordinates { get; set; }
 }

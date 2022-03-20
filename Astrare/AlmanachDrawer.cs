@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using VectSharp;
 using System.IO;
 using System.Linq;
@@ -504,8 +505,9 @@ public static class AlmanachDrawer
         var html = "<html><head><style>@page {margin: 0.5cm; }body{margin:0px;text-align:center}img{height:1100px}</style></head><body><img src=\"alma.png\"></body></html>";
 
         var props = new ConverterProperties();
-        props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
     }

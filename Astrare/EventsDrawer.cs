@@ -1,9 +1,8 @@
-using System;
+using System.Runtime.InteropServices;
 using System.IO;
 using Astrare.Models;
 using iText.Html2pdf;
 using iText.Kernel.Pdf;
-using iText.Layout.Font;
 
 namespace Astrare;
 
@@ -49,8 +48,10 @@ public static class EventsDrawer
         html += "</body></html>";
 
         var props = new ConverterProperties();
-        props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-        
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
         HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
     }
     
