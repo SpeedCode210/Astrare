@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Astrare</title>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="css/all.min.css"/>
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
+        <link rel="shortcut icon" type="icon" href="favicon.ico"  />
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link rel="Bookmark" href="favicon.ico">
+        <link rel="icon" type="image/png" href="favicon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <section id="first">
+            <div>
+                <img id="firstLogo" src="astrareLogo.png">
+                <br>
+                Various tools for amateur astronomers !
+                <br>
+                <a class="btn" href="#presentation" style="padding-right: 22px;">See more &nbsp;<i class="fa-solid fa-chevron-down"></i></a>
+            </div>
+        </section>
+        <section class="whiteSection" id="presentation">
+            <h2>What is Astrare ?</h2>
+            <div class="wrapper">
+                <div class="one">
+                    <p class="content">
+                        &emsp;Astrare is a desktop program that helps amateur astronomers that provide utilities to compute ephemerids, events, generating skycharts and more, in order to prepare their observation sessions.
+                        <br>
+                        &emsp;It's compatible with Windows and Linux, and will support MacOS and Android in the future.
+                    </p>
+                </div>
+                <div class="two">
+                    <img src="images/transparentScreen.png" id="screen1" class="screens">
+                </div>
+            </div>
+        </section>
+        <section class="whiteSection" id="features">
+            <h2>Document generating</h2>
+            <div class="wrapper">
+                <div class="one">
+                    <div class="content">
+                        <p>
+                            &emsp;Astrare provides many tools for generating ready-to-print PDF documents to have all what you need for your observations without bringing your computer. It also support .txt files.
+                        </p>
+                        <ul>
+                            <li>Ephemeris summary</li>
+                            <li>Skycharts</li>
+                            <li>Events list (for month or year)</li>
+                            <li>yearly graphic almanachs</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two">
+                    <img src="images/transparentScreen.png" id="screen2" class="screens">
+                </div>
+            </div>
+            </div>
+        </section>
+        <section id="last">
+            <h2>Download</h2>
+            <div id="lastContent">
+                <div>
+                <img id="firstLogo" src="astrareLogo.png">
+                <br>
+                Available on <i class="fa-brands fa-microsoft"></i> Windows and <i class="fa-brands fa-linux"></i> Linux.
+                <br>
+                <a class="btn" href="https://github.com/SpeedCode210/Astrare/releases/latest" style="padding-right: 22px;"><i class="fa-solid fa-download"></i>&nbsp;Download</a>
+            </div>
+            </div>
+            <sm>Copyright © 2022 - Raouf Ould Ali</sm>
+        </section>
+
+        <a href="#" id="up" class="float">
+            <i class="fa-solid fa-chevron-up my-float"></i>
+        </a>
+    </body>
+
+    <script>
+let b = document.getElementById("up");window.onscroll = function() {scrollFunction()};function scrollFunction() {if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {b.style.display = "block";} else {b.style.display = "none";}}
+    </script>
+</html>
