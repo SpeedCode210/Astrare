@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using Astrare.Models;
 using ImageMagick;
+using Org.BouncyCastle.Math.EC.Rfc8032;
 using VectSharp.SVG;
 
 namespace Astrare;
@@ -12,13 +13,13 @@ namespace Astrare;
 public static class SkyChartDrawer
 {
     private static readonly FontFamily NimbusRegular =
-        new(File.OpenRead(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                          @"/Resources/NimbusSanL-Reg.ttf"));
+        new(File.OpenRead(MainWindow.TmpPath + @"/Resources/NimbusSanL-Reg.ttf"));
 
-    public static void SaveSVG(AsterPosition[] positions,DateTime date, TimeSpan hour, int utcPlusX, bool dark = false, bool png = true)
+    public static void SaveSVG(AsterPosition[] positions, DateTime date, TimeSpan hour, int utcPlusX, bool dark = false, bool png = true)
     {
-        var background = dark ? Colour.FromRgb(16, 12, 12) : Colours.White;
-        var foreground = dark ? Colours.White : Colours.Black;
+        
+        var background = dark ? Colour.FromRgba(16, 12, 12, 0) : Colours.White;
+        var foreground = dark ? Colours.Gray : Colours.Black;
 
         var epsilon = 23.45;
 // Jour de l'année
@@ -74,11 +75,10 @@ public static class SkyChartDrawer
         var doc = new Document();
         var page = new Page(2400, 2400);
         doc.Pages.Add(page);
-        page.Background = background;
         var gpr = page.Graphics;
 
 
-        var json = File.ReadAllText(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+        var json = File.ReadAllText(MainWindow.TmpPath +
                                     "/Resources/data.json");
         var data = JsonSerializer.Deserialize<StarData[][]>(json);
         //Etoiles
@@ -96,22 +96,31 @@ public static class SkyChartDrawer
         }
         //Astres kosmorro
         foreach(var p in positions)
-            if(p.aster is ObjectIdentifier.SUN)
-                draw_star(p.right_ascension, p.declinaison, -7, Colours.Yellow);
-            else if(p.aster is ObjectIdentifier.MOON)
-                draw_star(p.right_ascension, p.declinaison, -5, Colours.Gray);
-            else if(p.aster is ObjectIdentifier.VENUS)
-                draw_star(p.right_ascension, p.declinaison, -4, Colours.Beige);
-            else if(p.aster is ObjectIdentifier.MERCURY)
-                draw_star(p.right_ascension, p.declinaison, -0.5, Colours.Gray);
-            else if(p.aster is ObjectIdentifier.MARS)
-                draw_star(p.right_ascension, p.declinaison, -1.5, Colours.Red);
-            else if(p.aster is ObjectIdentifier.JUPITER)
-                draw_star(p.right_ascension, p.declinaison, -2, Colours.Orange);
-            else if(p.aster is ObjectIdentifier.SATURN)
-                draw_star(p.right_ascension, p.declinaison, -1.5, Colours.LimeGreen);
-
-//Masque horizon
+            switch (p.aster)
+            {
+                case ObjectIdentifier.SUN:
+                    draw_star(p.right_ascension, p.declinaison, -7, Colours.Yellow);
+                    break;
+                case ObjectIdentifier.MOON:
+                    draw_star(p.right_ascension, p.declinaison, -5, Colours.Gray);
+                    break;
+                case ObjectIdentifier.VENUS:
+                    draw_star(p.right_ascension, p.declinaison, -4, Colours.Tan);
+                    break;
+                case ObjectIdentifier.MERCURY:
+                    draw_star(p.right_ascension, p.declinaison, -0.5, Colours.Olive);
+                    break;
+                case ObjectIdentifier.MARS:
+                    draw_star(p.right_ascension, p.declinaison, -1.5, Colours.Red);
+                    break;
+                case ObjectIdentifier.JUPITER:
+                    draw_star(p.right_ascension, p.declinaison, -2, Colours.Orange);
+                    break;
+                case ObjectIdentifier.SATURN:
+                    draw_star(p.right_ascension, p.declinaison, -1.5, Colours.LimeGreen);
+                    break;
+            }
+        //Masque horizon
         var path = new GraphicsPath();
         path.Arc(new Point(1200, 1200), rh, 0, Math.PI / 2);
         path.LineTo(new Point(1200, 2400));
@@ -311,16 +320,17 @@ public static class SkyChartDrawer
 
         doc.Pages.Last()
             .SaveAsSVG(
-                Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/skychart.svg",
+                MainWindow.TmpPath + "/skychart.svg",
                 SVGContextInterpreter.TextOptions.ConvertIntoPaths);
         
         if (png)
             using (var image =
-                   new MagickImage(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                                   "/skychart.svg"))
+                   new MagickImage(MainWindow.TmpPath +
+                                   "/skychart.svg", MagickFormat.Svg))
             {
-                image.Write(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                            "/skychart.png");
+                image.Transparent(new MagickColor(255,255,255));
+                image.Write(MainWindow.TmpPath +
+                            "/skychart.png", MagickFormat.Png);
             }
     }
 }

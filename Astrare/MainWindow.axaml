@@ -2,15 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:paz="using:Avalonia.Controls.PanAndZoom"
         xmlns:t="clr-namespace:Astrare.Translate.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Astrare.MainWindow"
         MinHeight="500" MinWidth="1024"
-        Title="Astrare" Icon="astrareIcon.png" Background="#121010">
+        Title="Astrare" Icon="astrareIcon.png">
     <Grid>
         <DockPanel Name="MainView">
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" Height="75">
-                <Image Source="astrareLogo.png" Height="75"/>
+                <Image Name="logo" Source="astrareLogo.png" Height="75"/>
                 <Menu>
                     <t:MenuItem Header="_File">
                         <t:MenuItem Header="_Save PDF" Click="SavePDF_OnClick"/>
@@ -28,11 +29,11 @@
                 </Menu>
             </StackPanel>
             <Grid ColumnDefinitions="*,*">
-                <Border Grid.Column="0" Background="#100c0c" BorderBrush="Gray" BorderThickness="1" Margin="5"
+                <Border Grid.Column="0" Background="#0000" BorderBrush="Gray" BorderThickness="1" Margin="5"
                         CornerRadius="5">
                     <StackPanel Margin="5">
                         <Grid HorizontalAlignment="Stretch" ColumnDefinitions="4*,7*"
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
                             <t:Label VerticalAlignment="Center" Margin="0,2">Date of ephemerides</t:Label>
                             <DatePicker Margin="0,2" Grid.Row="0" Grid.Column="1" MinYear="1900-01-01" MaxYear="2052-01-01" Name="CalculsDatePicker" HorizontalAlignment="Stretch" SelectedDateChanged="CalculsDatePicker_OnSelectedDateChanged"/>
                             <t:Label VerticalAlignment="Center" Margin="0,2" Grid.Row="1" Grid.Column="0">Latitude</t:Label>
@@ -43,14 +44,17 @@
                             <ComboBox Margin="0,2" Grid.Row="3" Grid.Column="1" Name="LanguagePicker" HorizontalAlignment="Stretch"/>
                             <t:Label VerticalAlignment="Center" Margin="0,2" Grid.Row="4" Grid.Column="0">Timezone (UTC+)</t:Label>
                             <NumericUpDown ParsingNumberStyle="Any" Margin="0,2" Grid.Row="4" Grid.Column="1" Name="TimeZonePicker"  Minimum="-12" Maximum="12" Increment="1" HorizontalAlignment="Stretch" ShowButtonSpinner="True"/>
+                            <t:Label VerticalAlignment="Center" Margin="0,2" Grid.Row="5" Grid.Column="0">Theme</t:Label>
+                            <ComboBox Margin="0,2" Grid.Row="5" Grid.Column="1" Name="Theme"  HorizontalAlignment="Stretch">
+                            </ComboBox>
                         </Grid>
                         <t:Button Margin="0,10,0,0" Click="Button_OnClick" Padding="5" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch">Reload</t:Button>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Background="#100c0c" BorderBrush="Gray" BorderThickness="1" Margin="5"
+                <Border Grid.Column="1" Background="#0000" BorderBrush="Gray" BorderThickness="1" Margin="5"
                         CornerRadius="5">
                     <TabControl Name="RightTabControl" SelectedIndex="1">
-                        <t:TabItem Header="Table" VerticalContentAlignment="Center" FontSize="15">
+                        <t:TabItem Header="Table" VerticalContentAlignment="Center" FontSize="11">
                             <DataGrid CanUserSortColumns="True" CanUserResizeColumns="True" x:Name="EphemeridsGrid"
                                       AutoGenerateColumns="False">
                                 <DataGrid.Columns>
@@ -69,10 +73,10 @@
                             </DataGrid>
                         </t:TabItem>
 
-                        <t:TabItem Header="Graphs" VerticalContentAlignment="Center" FontSize="15">
+                        <t:TabItem Header="Graphs" VerticalContentAlignment="Center" FontSize="11">
                             <ScrollViewer Name="GraphViewer" />
                         </t:TabItem>
-                        <t:TabItem Header="Moon" VerticalContentAlignment="Center" FontSize="15">
+                        <t:TabItem Header="Moon" VerticalContentAlignment="Center" FontSize="11">
                             <StackPanel>
                                 <Grid ColumnDefinitions="100,20,*" RowDefinitions="100,25,100">
                                     <Image Grid.Column="0" Grid.Row="0" Name="ActualMoonImage"/>
@@ -90,7 +94,7 @@
                                 </Grid>
                             </StackPanel>
                         </t:TabItem>
-                        <t:TabItem Header="Events" VerticalContentAlignment="Center" FontSize="15">
+                        <t:TabItem Header="Events" VerticalContentAlignment="Center" FontSize="11">
                             <DataGrid CanUserSortColumns="True" CanUserResizeColumns="True" x:Name="EventsGrid"
                                       AutoGenerateColumns="False">
                                 <DataGrid.Columns>
@@ -111,13 +115,43 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </t:TabItem>
-                        <t:TabItem Header="Skychart" VerticalContentAlignment="Center" FontSize="15">
-                            <Grid RowDefinitions="Auto, *">
+                        <t:TabItem Header="Skychart" VerticalContentAlignment="Center" FontSize="11">
+                            <Grid RowDefinitions="Auto, *, Auto">
                                 <TimePicker HorizontalAlignment="Center" SelectedTime="20:00" ClockIdentifier="24HourClock" Name="SkychartTime"/>
-                                <Image Grid.Row="1" Name="Skychart">
+                                <paz:ZoomBorder Grid.Row="1" Name="ZoomBorder" Stretch="None" ZoomSpeed="1.1"
+                                                Background="Transparent" ClipToBounds="True" Focusable="True"
+                                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Image Name="Skychart"/>
+                                </paz:ZoomBorder>
+                                <Grid Grid.Row="2" HorizontalAlignment="Center" Margin="5" RowDefinitions="20, 20" ColumnDefinitions="20,Auto,20,Auto,20,Auto,20,Auto">
+                                    <Border Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Yellow" CornerRadius="100" Width="16" Height="16"/>
+                                    <Border Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Gray" CornerRadius="100" Width="16" Height="16"/>
+                                    <Border Grid.Row="0" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Tan" CornerRadius="100" Width="12" Height="12"/>
+                                    <Border Grid.Row="0" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Orange" CornerRadius="100" Width="10" Height="10"/>
+                                    <Border Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Red" CornerRadius="100" Width="8" Height="8"/>
+                                    <Border Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Background="LimeGreen" CornerRadius="100" Width="8" Height="8"/>
+                                    <Border Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Olive" CornerRadius="100" Width="8" Height="8"/>
                                     
-                                </Image>
+                                    <t:Label Grid.Row="0" Grid.Column="1" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Sun"/>
+                                    <t:Label Grid.Row="0" Grid.Column="3" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Moon"/>
+                                    <t:Label Grid.Row="0" Grid.Column="5" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Venus"/>
+                                    <t:Label Grid.Row="0" Grid.Column="7" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Jupiter"/>
+                                    <t:Label Grid.Row="1" Grid.Column="1" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Mars"/>
+                                    <t:Label Grid.Row="1" Grid.Column="3" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Saturn"/>
+                                    <t:Label Grid.Row="1" Grid.Column="5" Margin="0,0,5,0" VerticalAlignment="Center" FontSize="12" Content="Mercury"/>
+                                </Grid>
                             </Grid>
+                        </t:TabItem>
+                        <t:TabItem Header="ISS transits" VerticalContentAlignment="Center" FontSize="11">
+                            <DataGrid CanUserSortColumns="True" CanUserResizeColumns="True" x:Name="IssGrid"
+                                      AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <t:DataGridTextColumn Header="Rise" Binding="{Binding DisplayRiseTime}"/>
+                                    <t:DataGridTextColumn Header="Culmination" Binding="{Binding DisplayCulminationTime}"/>
+                                    <t:DataGridTextColumn Header="Set" Binding="{Binding DisplaySetTime}"/>
+                                    <t:DataGridTextColumn Header="Type" Binding="{Binding VisibilityString}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </t:TabItem>
                     </TabControl>
                 </Border>

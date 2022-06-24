@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 
 namespace Astrare;
@@ -22,7 +24,10 @@ namespace Astrare;
 [SuppressMessage("ReSharper", "UnusedParameter.Local")]
 public partial class MainWindow : Window
 {
-    private GlobalData? _currentData;
+
+    public static readonly string TmpPath = SetupTmp();
+    
+    public static GlobalData? CurrentData { get; private set; }
 
     private DateTime _currentDate = DateTime.Now;
 
@@ -35,7 +40,28 @@ public partial class MainWindow : Window
         this.AttachDevTools();
 #endif
 
+        if (Settings.Current.Theme is 0)
+        {
+            var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
+            logo.Source = new Bitmap(assets.Open(new Uri("avares://Astrare/astrareLogoAlt.png")));
+        }
 
+        Theme.Items = new[]
+        {
+            new ComboBoxItem() { Content = Translate.Language.Current.Translate("Light") },
+            new ComboBoxItem() { Content = Translate.Language.Current.Translate("Dark") }
+        };
+        Theme.SelectedIndex = Settings.Current.Theme;
+        Theme.SelectionChanged += (sender, args) =>
+        {
+            Settings.Current.Theme = Theme.SelectedIndex;
+            Settings.Current.Save();
+            (Application.Current as App)!.ReloadTheme();
+            var mw = new MainWindow();
+            mw.Show();
+            this.Close();
+        };
+            
         Longitude.Value = (double) Settings.Current.Longitude;
         Latitude.Value = (double) Settings.Current.Latitude;
         TimeZonePicker.Value = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -62,6 +88,57 @@ public partial class MainWindow : Window
         KeyDown += OnKeyDown;
     }
 
+    private static string SetupTmp()
+    {
+        var path =Path.GetTempPath() + "/AstrareTemp";
+        path = path.Replace("//", "/").Replace("\\/", "\\");
+
+        if (Directory.Exists(path))
+            Directory.Delete(path, true);
+        
+        Directory.CreateDirectory(path);
+
+        if (!Directory.Exists(path + "/Resources"))
+        {
+            CopyDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/Resources", path + "/Resources", true);
+        }
+
+        return path;
+    }
+
+    static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        {
+            // Get information about the source directory
+            var dir = new DirectoryInfo(sourceDir);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+            // Cache directories before we start copying
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // Create the destination directory
+            Directory.CreateDirectory(destinationDir);
+
+            // Get the files in the source directory and copy to the destination directory
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDir, file.Name);
+                file.CopyTo(targetFilePath);
+            }
+
+            // If recursive and copying subdirectories, recursively call this method
+            if (recursive)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                }
+            }
+        }
+
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key is Key.F11)
@@ -72,8 +149,8 @@ public partial class MainWindow : Window
 
     private void SkychartTimeOnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
     {
-        SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
-        Skychart.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+        SkyChartDrawer.SaveSVG(CurrentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
+        Skychart.Source = new Bitmap(MainWindow.TmpPath +
                                      "/skychart.png");
     }
 
@@ -120,7 +197,7 @@ public partial class MainWindow : Window
             //tentative de récupérer les données de Kosmorro
             try
             {
-                _currentData =
+                CurrentData =
                     KosmorroConnector.GetFromKosmorro(_currentDate, Settings.Current.Latitude,
                         Settings.Current.Longitude, (int) TimeZonePicker.Value);
             }
@@ -134,47 +211,47 @@ public partial class MainWindow : Window
             {
                 //Remplissage du tableau
                 List<DisplayEphemerides> data = new();
-                foreach (var e in _currentData.ephemerides)
+                foreach (var e in CurrentData.ephemerides)
                     data.Add(new(e));
 
                 EphemeridsGrid.Items = data;
 
                 //Génération du graphique
-                GraphViewer.Content = GraphDrawer.GetCanvas(_currentData.ephemerides);
+                GraphViewer.Content = GraphDrawer.GetCanvas(CurrentData.ephemerides);
 
 
                 //Affichage des phases lunaires
                 ActualMoonImage.Source = new Bitmap(
-                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                    TmpPath +
                     "/Resources/MoonPhases/" +
-                    _currentData.moon_phase.phase.ToString().ToLower()
+                    CurrentData.moon_phase.phase.ToString().ToLower()
                         .Replace("_", "-") +
                     ".png");
-                ActualMoonName.Content = MoonPhase.TypeToString(_currentData.moon_phase.phase);
-                if (_currentData.moon_phase.time != null)
+                ActualMoonName.Content = MoonPhase.TypeToString(CurrentData.moon_phase.phase);
+                if (CurrentData.moon_phase.time != null)
                 {
                     ActualMoonDate.Content =
-                        "Start : " + ((DateTime) _currentData.moon_phase.time).ToString("dd/MM/yyyy HH:mm");
+                        "Start : " + ((DateTime) CurrentData.moon_phase.time).ToString("dd/MM/yyyy HH:mm");
                 }
                 else
                 {
                     ActualMoonDate.Content = "";
                 }
 
-                if (_currentData.moon_phase.next != null)
+                if (CurrentData.moon_phase.next != null)
                 {
                     NextMoonImage.Source = new Bitmap(
-                        System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                        TmpPath +
                         "/Resources/MoonPhases/" +
-                        _currentData.moon_phase.next.phase.ToString().ToLower()
+                        CurrentData.moon_phase.next.phase.ToString().ToLower()
                             .Replace("_", "-") +
                         ".png");
-                    NextMoonName.Content = MoonPhase.TypeToString(_currentData.moon_phase.next.phase);
+                    NextMoonName.Content = MoonPhase.TypeToString(CurrentData.moon_phase.next.phase);
 
-                    if (_currentData.moon_phase.next.time != null)
+                    if (CurrentData.moon_phase.next.time != null)
                     {
                         NextMoonDate.Content =
-                            "Start : " + ((DateTime) _currentData.moon_phase.next.time).ToString("dd/MM/yyyy HH:mm");
+                            "Start : " + ((DateTime) CurrentData.moon_phase.next.time).ToString("dd/MM/yyyy HH:mm");
                     }
                     else
                     {
@@ -190,16 +267,20 @@ public partial class MainWindow : Window
                     NextMoonDate.Content = "";
                 }
 
+                //Passages ISS
+                var issInfo = KosmorroConnector.GetIssInfo(_currentDate, Settings.Current.Latitude,
+                    Settings.Current.Longitude, (int) TimeZonePicker.Value);
+                IssGrid.Items = issInfo;
+                
                 //Affichage des évènements
                 List<DisplayEvent> eventsDisplay = new();
-                foreach (var e in _currentData.events)
+                foreach (var e in CurrentData.events)
                     eventsDisplay.Add(new(e));
 
                 EventsGrid.Items = eventsDisplay;
                 
-                SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
-                Skychart.Source = new Bitmap(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                                             "/skychart.png");
+                SkyChartDrawer.SaveSVG(CurrentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,true);
+                Skychart.Source = new Bitmap(TmpPath + "/skychart.png");
             });
         }).Start();
     }
@@ -314,7 +395,7 @@ public partial class MainWindow : Window
 
     private async void Save()
     {
-        if (_currentData is null)
+        if (CurrentData is null)
             return;
 
         var saveFileBox = new SaveFileDialog
@@ -340,7 +421,7 @@ public partial class MainWindow : Window
             fileName += ".pdf";
         try
         {
-            PdfDrawer.DrawToDocument(_currentData, fileName, (int) TimeZonePicker.Value);
+            PdfDrawer.DrawToDocument(CurrentData, fileName, (int) TimeZonePicker.Value);
             OpenFile(fileName);
         }
         catch (Exception ex)
@@ -717,7 +798,7 @@ public partial class MainWindow : Window
 
     private async void SkychartPDF_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (_currentData is null)
+        if (CurrentData is null)
             return;
 
         var saveFileBox = new SaveFileDialog
@@ -743,8 +824,8 @@ public partial class MainWindow : Window
             fileName += ".pdf";
         try
         {
-            SkyChartDrawer.SaveSVG(_currentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,false, false);
-            SkychartPdfDrawer.DrawToDocument(_currentData, fileName, (int) TimeZonePicker.Value, SkychartTime.SelectedTime!.Value);
+            SkyChartDrawer.SaveSVG(CurrentData!.coordinates, _currentDate, SkychartTime.SelectedTime!.Value, (int)TimeZonePicker.Value,false, false);
+            SkychartPdfDrawer.DrawToDocument(CurrentData, fileName, (int) TimeZonePicker.Value, SkychartTime.SelectedTime!.Value);
             OpenFile(fileName);
         }
         catch (Exception ex)

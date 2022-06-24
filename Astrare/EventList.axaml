@@ -5,7 +5,7 @@
         xmlns:t="clr-namespace:Astrare.Translate.Controls"
         mc:Ignorable="d" Width="700" Height="450"
         x:Class="Astrare.EventList"
-        Title="Astrare - Events list" Icon="astrareIcon.png" Background="#121010">
+        Title="Astrare - Events list" Icon="astrareIcon.png">
     <StackPanel Margin="10">
         <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
             <t:Label VerticalAlignment="Center" Content="Show planets icons" Margin="0,5,0,5" />

@@ -5,7 +5,7 @@
         xmlns:t="clr-namespace:Astrare.Translate.Controls"
         mc:Ignorable="d" Width="700" Height="550"
         x:Class="Astrare.AlmanachGenerator"
-        Title="Astrare - Year almanach" Icon="astrareIcon.png" Background="#121010">
+        Title="Astrare - Year almanach" Icon="astrareIcon.png">
     <StackPanel Margin="10">
         <Grid RowDefinitions="Auto,Auto,Auto, Auto" ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
             <t:Label VerticalAlignment="Center" Content="Moon ephemerides" Margin="0,5,0,5" />

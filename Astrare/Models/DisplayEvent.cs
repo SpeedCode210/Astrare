@@ -31,12 +31,12 @@ public class DisplayEvent
             End = e.ends_at!.Value.ToString("HH:mm");
         if (e.objects.Length < 1)
             return;
-        IconPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + $"/Resources/{e.objects[0].identifier.ToString().ToLower()}.png";
+        IconPath = MainWindow.TmpPath + $"/Resources/{e.objects[0].identifier.ToString().ToLower()}.png";
         Icon = new Bitmap(IconPath);
         
         if (e.objects.Length < 2)
             return;
-        IconPath2 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + $"/Resources/{e.objects[1].identifier.ToString().ToLower()}.png";
+        IconPath2 = MainWindow.TmpPath + $"/Resources/{e.objects[1].identifier.ToString().ToLower()}.png";
         Icon2 = new Bitmap(IconPath2);
     }
 }

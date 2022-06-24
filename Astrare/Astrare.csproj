@@ -144,10 +144,14 @@
         <None Update="Resources\skychart_template.html">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="scripts\iss.py">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.12" />
         <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.12" />
+        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="10.12.0" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.12" />
@@ -168,6 +172,8 @@
       <AvaloniaResource Include="astrareIcon.png" />
       <None Remove="astrareLogo.png" />
       <AvaloniaResource Include="astrareLogo.png" />
+      <None Remove="astrareLogoAlt.png" />
+      <AvaloniaResource Include="astrareLogoAlt.png" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="astrareIcon.ico" />

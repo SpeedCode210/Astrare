@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using VectSharp;
 using System.IO;
 using System.Linq;
@@ -9,21 +9,22 @@ using Astrare.Models;
 using Astrare.Translate;
 using ImageMagick;
 using iText.Html2pdf;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using VectSharp.SVG;
+using Point = VectSharp.Point;
 using Size = VectSharp.Size;
 
 namespace Astrare;
 
+[SuppressMessage("ReSharper", "PossibleLossOfFraction")]
 public static class AlmanachDrawer
 {
     private static readonly FontFamily NimbusBold = new(File.OpenRead(
-        Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-        @"/Resources/NimbusSanL-Bol.ttf"));
+        MainWindow.TmpPath + @"/Resources/NimbusSanL-Bol.ttf"));
 
     private static readonly FontFamily NimbusRegular =
-        new(File.OpenRead(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                          @"/Resources/NimbusSanL-Reg.ttf"));
+        new(File.OpenRead(MainWindow.TmpPath + @"/Resources/NimbusSanL-Reg.ttf"));
 
 
     const int Margin = 300;
@@ -52,8 +53,8 @@ public static class AlmanachDrawer
             nightFill);
 
         var riseDash = new LineDash(9, 9, 0);
-        var setDash = new LineDash(3, 9, 0);
-        var culminationDash = new LineDash(1, 1, 0);
+        var setDash = new LineDash(18, 12, 0);
+        var culminationDash = new LineDash(1, 0, 0);
 
         //Ecriture des titres
         gpr.FillText(new Point(100, 120),
@@ -65,8 +66,7 @@ public static class AlmanachDrawer
         //Affichage du logo
 
         using (var image =
-               new MagickImage(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                               "/Resources/astrareLogoDark.png"))
+               new MagickImage(MainWindow.TmpPath + "/Resources/astrareLogoDark.png"))
         {
             List<byte> arr = new();
             foreach (var b in image.GetPixels())
@@ -91,15 +91,8 @@ public static class AlmanachDrawer
                 var eph = data[i].ephemerides[0].Clone(); // Ephémérides du soleil
                 var visible = eph.IsVisible(eph);
 
-                if (eph.rise_time is null)
-                {
-                    eph.rise_time = new DateTime(2000, 1, 1, 0, 0, 0);
-                }
-
-                if (eph.set_time is null)
-                {
-                    eph.set_time = new DateTime(2000, 1, 1, 23, 59, 59);
-                }
+                eph.rise_time ??= new DateTime(2000, 1, 1, 0, 0, 0);
+                eph.set_time ??= new DateTime(2000, 1, 1, 23, 59, 59);
 
                 var riseTimeInt = eph.rise_time!.Value.Hour * 60 + eph.rise_time!.Value.Minute;
                 var setTimeInt = eph.set_time!.Value.Hour * 60 + eph.set_time!.Value.Minute;
@@ -134,81 +127,74 @@ public static class AlmanachDrawer
         if (moonEphs)
         {
             for (int i = 0; i < data.Length; i++)
-        {
-            var eph = data[i].ephemerides[1].Clone(); // Ephémérides de la lune
-            var visible = eph.IsVisible(data[i].ephemerides[0]);
-
-            if (eph.rise_time is null)
             {
-                eph.rise_time = new DateTime(2000, 1, 1, 0, 0, 0);
-            }
+                var eph = data[i].ephemerides[1].Clone(); // Ephémérides de la lune
+                var visible = eph.IsVisible(data[i].ephemerides[0]);
 
-            if (eph.set_time is null)
-            {
-                eph.set_time = new DateTime(2000, 1, 1, 23, 59, 59);
-            }
+                eph.rise_time ??= new DateTime(2000, 1, 1, 0, 0, 0);
+                eph.set_time ??= new DateTime(2000, 1, 1, 23, 59, 59);
 
-            var riseTimeInt = eph.rise_time!.Value.Hour * 60 + eph.rise_time!.Value.Minute;
-            var setTimeInt = eph.set_time!.Value.Hour * 60 + eph.set_time!.Value.Minute;
+                var riseTimeInt = eph.rise_time!.Value.Hour * 60 + eph.rise_time!.Value.Minute;
+                var setTimeInt = eph.set_time!.Value.Hour * 60 + eph.set_time!.Value.Minute;
 
-            if (visible)
-            {
-                if (riseTimeInt < setTimeInt)
+                if (visible)
                 {
-                    gpr.FillRectangle(
-                        new Point(Margin + Math.Min(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440,
-                            MarginTop + i * DayHeight + 1),
-                        new Size(Math.Abs(riseTimeInt - setTimeInt) * (HourWidth * 24) / 1440, DayHeight - 2),
-                        moonFill);
-                }
-                else
-                {
-                    gpr.FillRectangle(new Point(Margin, MarginTop + i * DayHeight + 1),
-                        new Size(Math.Min(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440, DayHeight - 2), moonFill);
-
-                    gpr.FillRectangle(
-                        new Point(Margin + Math.Max(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440,
-                            MarginTop + i * DayHeight + 1),
-                        new Size((1440 - Math.Max(riseTimeInt, setTimeInt)) * (HourWidth * 24) / 1440, DayHeight - 2),
-                        moonFill);
-                }
-            }
-        }
-
-        for (int i = 0; i < data.Length; i++)
-        {
-            var eph = data[i].ephemerides[1].Clone(); // Ephémérides de la lune
-
-            // Icone phase
-
-            if (eph.culmination_time != null && eph.culmination_time.HasValue)
-            {
-                var culminationTimeInt = eph.culmination_time!.Value.Hour * 60 + eph.culmination_time!.Value.Minute;
-
-                //Chargement de l'icone de la lune
-                using var image =
-                    new MagickImage(
-                        Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                        "/Resources/MoonPhases/" +
-                        data[i].moon_phase.phase.ToString().ToLower().Replace('_', '-') +
-                        ".png");
-                List<byte> arr = new();
-                foreach (var b in image.GetPixels())
-                {
-                    foreach (var c in b.ToArray())
+                    if (riseTimeInt < setTimeInt)
                     {
-                        arr.Add(c);
+                        gpr.FillRectangle(
+                            new Point(Margin + Math.Min(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440,
+                                MarginTop + i * DayHeight + 1),
+                            new Size(Math.Abs(riseTimeInt - setTimeInt) * (HourWidth * 24) / 1440, DayHeight - 2),
+                            moonFill);
+                    }
+                    else
+                    {
+                        gpr.FillRectangle(new Point(Margin, MarginTop + i * DayHeight + 1),
+                            new Size(Math.Min(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440, DayHeight - 2), moonFill);
+
+                        gpr.FillRectangle(
+                            new Point(Margin + Math.Max(riseTimeInt, setTimeInt) * (HourWidth * 24) / 1440,
+                                MarginTop + i * DayHeight + 1),
+                            new Size((1440 - Math.Max(riseTimeInt, setTimeInt)) * (HourWidth * 24) / 1440, DayHeight - 2),
+                            moonFill);
                     }
                 }
-
-                gpr.DrawRasterImage(
-                    Margin + ((culminationTimeInt * HourWidth * 24) / 1440) - 16,
-                    MarginTop + i * DayHeight + DayHeight / 2 - 16,
-                    32.0,
-                    32.0,
-                    new RasterImage(arr.ToArray(), image.Width, image.Height, PixelFormats.RGBA, true));
             }
-        }
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                var eph = data[i].ephemerides[1].Clone(); // Ephémérides de la lune
+
+                // Icone phase
+
+                if (eph.culmination_time is { })
+                {
+                    var culminationTimeInt = eph.culmination_time!.Value.Hour * 60 + eph.culmination_time!.Value.Minute;
+
+                    //Chargement de l'icone de la lune
+                    using var image =
+                        new MagickImage(
+                            MainWindow.TmpPath +
+                            "/Resources/MoonPhases/" +
+                            data[i].moon_phase!.phase.ToString().ToLower().Replace('_', '-') +
+                            ".png");
+                    List<byte> arr = new();
+                    foreach (var b in image.GetPixels())
+                    {
+                        foreach (var c in b.ToArray())
+                        {
+                            arr.Add(c);
+                        }
+                    }
+
+                    gpr.DrawRasterImage(
+                        Margin + ((culminationTimeInt * HourWidth * 24) / 1440) - 16,
+                        MarginTop + i * DayHeight + DayHeight / 2 - 16,
+                        32.0,
+                        32.0,
+                        new RasterImage(arr.ToArray(), image.Width, image.Height, PixelFormats.RGBA, true));
+                }
+            }
         }
         
                 
@@ -382,7 +368,7 @@ public static class AlmanachDrawer
             new Size(HourWidth * 6 - 60, 32), new SolidColourBrush(Colours.LightGray));
 
         using (var image =
-               new MagickImage(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+               new MagickImage(MainWindow.TmpPath +
                                "/Resources/MoonPhases/waning-crescent.png"))
         {
             List<byte> arr = new();
@@ -492,31 +478,26 @@ public static class AlmanachDrawer
             str, new Font(NimbusRegular, 40),
             new SolidColourBrush(Colours.Purple), TextBaselines.Middle);
 
-        doc.Pages.Last().SaveAsSVG(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.svg", SVGContextInterpreter.TextOptions.ConvertIntoPaths);
+        doc.Pages.Last().SaveAsSVG(MainWindow.TmpPath + "/alma.svg", SVGContextInterpreter.TextOptions.ConvertIntoPaths);
 
         // Read first frame of svg image
-        using (var image = new MagickImage(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.svg"))
+        using (var image = new MagickImage(MainWindow.TmpPath + "/alma.svg"))
         {
             // Save frame as png
-            image.Write(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/alma.png");
+            image.Write(MainWindow.TmpPath + "/alma.png");
         }
         
 
-        var html = "<html><head><style>@page {margin: 0.5cm; }body{margin:0px;text-align:center}img{height:1100px}</style></head><body><img src=\"alma.png\"></body></html>";
+        var html = "<html><head><style>@page {margin: 0.5cm; }body{margin:0px;text-align:center}img{height:1100px}</style></head><body><img src=\"{path}/alma.png\"></body></html>";
+
+        html = html.Replace("{path}", MainWindow.TmpPath);
 
         var props = new ConverterProperties();
+        
+        PdfDocument pdfDocument = new PdfDocument(new PdfWriter(fileName));
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            props.SetBaseUri(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-
-        HtmlConverter.ConvertToPdf(html, new PdfWriter(fileName), props);
+        HtmlConverter.ConvertToPdf(html, pdfDocument, new ConverterProperties());
     }
-
-    private static int HourToMinutes(DateTime time)
-    {
-        return time.Hour * 60 + time.Minute;
-    }
-
 
     private static GraphicsPath GetPlanetRisePath(int id, GlobalData[] data)
     {

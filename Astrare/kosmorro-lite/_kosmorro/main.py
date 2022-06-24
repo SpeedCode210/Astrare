@@ -126,7 +126,7 @@ def get_information(
         t = ts.tt(compute_date.year, compute_date.month, compute_date.day, 12, 0)
         planets = load('de421.bsp')
         earth = planets['earth']
-        for aster in ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter barycenter', 'uranus barycenter',
+        for aster in ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter barycenter', 'saturn barycenter', 'uranus barycenter',
                       'neptune barycenter']:
             # Load the JPL ephemeris DE421 (covers 1900-2050).
             planet = planets[aster]

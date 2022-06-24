@@ -27,6 +27,9 @@ public class French : Language
         Translations = new()
         {
             {"File", "Fichier"},
+            {"Theme", "Thème"},
+            {"Light", "Clair"},
+            {"Dark", "Sombre"},
             {"Year", "Année"},
             {"Month", "Mois"},
             {"Shown events", "Événements affichés"},
@@ -45,6 +48,7 @@ public class French : Language
             {"Timezone (UTC+)", "Fuseau horaire (UTC+)"},
             {"Year events", "Événements de l'année"},
             {"Month events", "Événements du mois"},
+            {"ISS transits", "Passages ISS"},
             {"Moon phase", "Phase de la lune"},
             {"Month graphic almanach", "Almanach graphique mensuel"},
             {"Year graphic almanach", "Almanach graphique annuel"},
@@ -111,6 +115,9 @@ public class French : Language
             {"Partial lunar eclipse", "Éclipse lunaire partielle"},
             {"Penumbral lunar eclipse", "Éclipse lunaire pénombrale"},
             {"Unknown event", "Événement inconnu"},
+            {"Occulted", "Occulté"},
+            {"Daylight", "Jour"},
+            {"Visible", "Visible"},
             {"Summer solstice", "Solstice d'été"},
             {"Winter solstice", "Solstice d'hiver"},
             {"Spring equinox", "Équinoxe de printemps"},

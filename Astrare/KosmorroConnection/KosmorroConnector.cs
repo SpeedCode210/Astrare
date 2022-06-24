@@ -82,6 +82,50 @@ public static class KosmorroConnector
             throw new Exception("Can't parse data from Kosmorro, please see the console for more information.");
         }
     }
+    
+    
+    public static IssData[] GetIssInfo(DateTime? date, decimal lat, decimal lon, int timezone)
+    {
+        date ??= DateTime.Now;
+        var cmd = ("cd {/d} " +
+                   System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                   $"/scripts && {PythonHelper.GetPythonCommand()} iss.py -lat {lat.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -lon {lon.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -d " +
+                   ((DateTime)date).ToString("yyyy-MM-dd") +
+                   " -t " + timezone);
+
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            cmd = cmd.Replace("{/d}", "/d");
+        }
+        else
+        {
+            cmd = cmd.Replace(" {/d}", "");
+        }
+
+        var json = ShellHelper.Bash(cmd);
+        try
+        {
+            
+            var result = JsonSerializer.Deserialize<IssData[]>(json, new JsonSerializerOptions()
+            {
+                Converters = {
+                    new JsonStringEnumConverter()
+                }
+            });
+            
+            if (result is null)
+                throw new Exception("Can't get data from Kosmorro.");
+
+
+            return result;
+
+        }
+        catch (JsonException ex)
+        {
+            throw new Exception("Can't parse data from Kosmorro, please see the console for more information.");
+        }
+    }
 }
 
 public enum DataGetMode{

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>{text-1}</title>
-    <link rel="stylesheet" href="Resources/template.css" />
+    <link rel="stylesheet" href="{path}/Resources/template.css" />
     <style>
         @page {
             margin: 0.5cm;
@@ -16,12 +16,12 @@
 <table>
     <tr>
         <td class="textth">
-            <img src="Resources/astrareLogoDark.png" class="logo">
+            <img src="{path}/Resources/astrareLogoDark.png" class="logo">
             <h1>{text-1}</h1>
             <h2>{text-2}</h2>
         </td>
         <td class="imgth">
-            <img src="Resources/instrument.png" class="instrument">
+            <img src="{path}/Resources/instrument.png" class="instrument">
         </td>
     </tr>
 </table>
@@ -33,7 +33,7 @@
     <table class="events">
         <tr>
             <td class="planet">
-                <img src="Resources/MoonPhases/{text-7}.png" width="35px" />
+                <img src="{path}/Resources/MoonPhases/{text-7}.png" width="35px" />
             </td>
             <td>
                 <h3>{text-9}</h3>
@@ -41,10 +41,10 @@
             </td>
             <!--1<td style="width:100px!important;"></td>1-->
             <td class="planet">
-                <!--3<img src="Resources/{text-11}.png" width="35px" />3-->
+                <!--3<img src="{path}/Resources/{text-11}.png" width="35px" />3-->
             </th>
             <td class="planet">
-                <!--2<img src="Resources/{text-10}.png" width="35px" />2-->
+                <!--2<img src="{path}/Resources/{text-10}.png" width="35px" />2-->
             </td>
             </td>
             <!--4<td>
@@ -57,7 +57,7 @@
 </center>
 
 <section class="ephemerides">
-    <img src="./ephs.svg" style="width: 80%;text-align: center;">
+    <img src="{path}/ephs.svg" style="width: 80%;text-align: center;">
 </section>
 
 </body>

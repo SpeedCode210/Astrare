@@ -8,6 +8,8 @@ public class Settings
 {
     public decimal Latitude { get; set; } = 360;
     public decimal Longitude { get; set; } = 360;
+    
+    public int Theme { get; set; } = 1;
 
     public string Language { get; set; } = "English";
 

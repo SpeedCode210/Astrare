@@ -14,10 +14,10 @@ namespace Astrare;
 
 public static class GraphDrawer
 {
-    private static readonly FontFamily NimbusBold = new(File.OpenRead(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"/Resources/NimbusSanL-Bol.ttf"));
+    private static readonly FontFamily NimbusBold = new(File.OpenRead(MainWindow.TmpPath + @"/Resources/NimbusSanL-Bol.ttf"));
 
     private static readonly FontFamily NimbusRegular =
-        new(File.OpenRead(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"/Resources/NimbusSanL-Reg.ttf"));
+        new(File.OpenRead(MainWindow.TmpPath + @"/Resources/NimbusSanL-Reg.ttf"));
 
     public static Canvas GetCanvas(AsterEphemerides[] eph)
     {
@@ -64,7 +64,7 @@ public static class GraphDrawer
 
             //Ecriture du nom de la planète
             gpr.FillText(new Point(150, 30 + (i * 100)), display.Name, new Font(NimbusBold, 15),
-                new SolidColourBrush(Colours.White), TextBaselines.Middle);
+                new SolidColourBrush(Colours.Gray), TextBaselines.Middle);
             
 
             var riseTimeInt = eph[i].rise_time!.Value.Hour * 60 + eph[i].rise_time!.Value.Minute;
@@ -89,7 +89,7 @@ public static class GraphDrawer
                     new Point(
                         150 + culminationTimeInt * 350 / 1440 -
                         gpr.MeasureText(middleTime, new Font(NimbusRegular, 13.0)).Width / 2, 65 + (i * 100)),
-                    middleTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.White), TextBaselines.Middle);
+                    middleTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.Gray), TextBaselines.Middle);
             
             
             //Dessin de la ligne d'arrière plan
@@ -128,7 +128,7 @@ public static class GraphDrawer
                     new Point(
                         150 + Math.Min(riseTimeInt, setTimeInt) * 350 / 1440 -
                         gpr.MeasureText(minTime, new Font(NimbusRegular, 13.0)).Width / 2, 65 + (i * 100)),
-                    minTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.White), TextBaselines.Middle);
+                    minTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.Gray), TextBaselines.Middle);
 
             //Ecriture de la borne supérieure
             if (writeSetHour)
@@ -136,7 +136,7 @@ public static class GraphDrawer
                     new Point(
                         150 + Math.Max(riseTimeInt, setTimeInt) * 350 / 1440 -
                         gpr.MeasureText(maxTime, new Font(NimbusRegular, 13.0)).Width / 2, 65 + (i * 100)),
-                    maxTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.White), TextBaselines.Middle);
+                    maxTime, new Font(NimbusRegular, 13), new SolidColourBrush(Colours.Gray), TextBaselines.Middle);
 
 
             //Si disponible, repérer le point de culmination
