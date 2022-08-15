@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -107,37 +108,37 @@ public partial class MainWindow : Window
     }
 
     static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+    {
+        // Get information about the source directory
+        var dir = new DirectoryInfo(sourceDir);
+
+        // Check if the source directory exists
+        if (!dir.Exists)
+            throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+        // Cache directories before we start copying
+        DirectoryInfo[] dirs = dir.GetDirectories();
+
+        // Create the destination directory
+        Directory.CreateDirectory(destinationDir);
+
+        // Get the files in the source directory and copy to the destination directory
+        foreach (FileInfo file in dir.GetFiles())
         {
-            // Get information about the source directory
-            var dir = new DirectoryInfo(sourceDir);
+            string targetFilePath = Path.Combine(destinationDir, file.Name);
+            file.CopyTo(targetFilePath);
+        }
 
-            // Check if the source directory exists
-            if (!dir.Exists)
-                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-            // Cache directories before we start copying
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            // Create the destination directory
-            Directory.CreateDirectory(destinationDir);
-
-            // Get the files in the source directory and copy to the destination directory
-            foreach (FileInfo file in dir.GetFiles())
+        // If recursive and copying subdirectories, recursively call this method
+        if (recursive)
+        {
+            foreach (DirectoryInfo subDir in dirs)
             {
-                string targetFilePath = Path.Combine(destinationDir, file.Name);
-                file.CopyTo(targetFilePath);
-            }
-
-            // If recursive and copying subdirectories, recursively call this method
-            if (recursive)
-            {
-                foreach (DirectoryInfo subDir in dirs)
-                {
-                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
+                string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestinationDir, true);
             }
         }
+    }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -285,32 +286,37 @@ public partial class MainWindow : Window
         }).Start();
     }
 
-    private void CheckKosmorro(Action callback)
+    private async void CheckKosmorro(Action callback)
     {
         if (PythonHelper.GetPythonCommand() is null)
         {
-            ShowMessage("Python 3 is not installed",
-                "The program didn't find a compatible version of Python 3 installed in your computer, please install Python 3.7 or later");
-            return;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                ShowMessage("Python 3 is not installed",
+                    "The program didn't find a compatible version of Python 3 installed in your computer, it is trying to install it");
+#pragma warning disable SYSLIB0014
+                    var client = new WebClient();
+#pragma warning restore SYSLIB0014
+                    await client.DownloadFileTaskAsync("https://www.python.org/ftp/python/3.10.6/python-3.10.6-amd64.exe", Path.Combine(TmpPath, "python.exe"));
+                    ShellHelper.Bash(Path.Combine(TmpPath, "python.exe") + " InstallAllUsers=1 PrependPath=1");
+            }
+            else
+            {
+                ShowMessage("Python 3 is not installed",
+                    "The program didn't find a compatible version of Python 3 installed in your computer, please install Python 3.7 or later");
+                return;
+            }
         }
 
 
         var regex = new Regex("Kosmorro Lite [\\d]+\\.[\\d]+\\.?[\\d]*");
         //On essaye d'obtenir la version de kosmorro installée
-
         var cmd = "cd {/d} " +
-                  System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
-                  "/kosmorro-lite && " + PythonHelper.GetPythonCommand() +
+                  Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                  "/kosmorro-lite && " + PythonHelper.GetPythonCommand(true) +
                   " kosmorro-lite -v";
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            cmd = cmd.Replace("{/d}", "/d");
-        }
-        else
-        {
-            cmd = cmd.Replace(" {/d}", "");
-        }
+        cmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? cmd.Replace("{/d}", "/d") : cmd.Replace(" {/d}", "");
 
 
         var commandResult =
@@ -323,8 +329,17 @@ public partial class MainWindow : Window
             ShowMessage("Kosmorro is not installed", "Kosmorro is being installed, please wait until it finishes.");
             var th = new Thread(() =>
             {
-                ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.5");
-                ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install python-dateutil");
+                //Installation de pip
+                var pipCmd = "cd {/d} " +
+                             Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                             "/scripts && " + PythonHelper.GetPythonCommand() +
+                             " get-pip.py";
+
+                pipCmd = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pipCmd.Replace("{/d}", "/d") : pipCmd.Replace(" {/d}", "");
+                ShellHelper.Bash(pipCmd);
+                
+                // Installation de kosmorrolib
+                ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.5 python-dateutil python-dateutil");
 
                 commandResult = regex.Match(ShellHelper.Bash(cmd));
                 if (!commandResult.Success || commandResult.Length < 1)
@@ -348,6 +363,7 @@ public partial class MainWindow : Window
         else
         {
             ShellHelper.Bash(PythonHelper.GetPythonCommand() + " -m pip install kosmorrolib==1.0.5");
+            MessageView.IsEnabled = MessageView.IsVisible = false;
             callback.Invoke();
         }
     }

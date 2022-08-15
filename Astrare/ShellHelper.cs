@@ -38,7 +38,7 @@ public static class ShellHelper
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
                 Arguments = "/c " + cmd,
                 RedirectStandardError = true,

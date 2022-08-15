@@ -7,11 +7,11 @@ public static class PythonHelper
 {
     private static string? _currentPython = "TEST";
 
-    public static string? GetPythonCommand()
+    public static string? GetPythonCommand(bool forceResolve = false)
     {
-        if (_currentPython != "TEST")
+        if (_currentPython != "TEST" && !forceResolve)
             return _currentPython;
-        var tests = new [] {"python", "python3", "python3.9","python3.8","python3.7","python37","python38","python39","python310","python3.10"};
+        var tests = new [] {"python", "python3", "python3.9","python3.8","python3.7","python37","python38","python39","python310","python3.10", "\"C:\\Program Files\\Python310\\python.exe\""};
         foreach (var test in tests)
         {
             var regex = new Regex("Python 3\\.[\\d]+\\.[\\d]+");

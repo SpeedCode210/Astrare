@@ -147,6 +147,9 @@
         <None Update="scripts\iss.py">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="scripts\get-pip.py">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="0.10.12" />
