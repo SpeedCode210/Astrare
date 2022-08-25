@@ -32,7 +32,16 @@ Various tools for amateur astronomers !
 
 ## Installation
 
-Just get the .exe/.rpm/.deb/.tar.gz from the last release and install it
+### On Linux distributions based on Fedora Linux from Fedora Copr
+
+```
+sudo dnf copr enable raoufouldali/astrare
+sudo dnf install astrare
+```
+
+### Other systems
+
+Just get the .exe/.rpm/.deb/.tar.gz from the last release and install it, or compile directly from source.
 
 ## Dependencies
 
