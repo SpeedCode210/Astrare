@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="89d3ff57-108b-4d6a-9293-fe346156f7ee" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Astrare/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Astrare/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Astrare/About.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/About.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Astrare/KosmorroConnection/KosmorroConnector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Astrare/KosmorroConnection/KosmorroConnector.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,13 +51,13 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Publish to folder.Publish Astrare to folder (Windows)">
+  <component name="RunManager" selected="Publish to folder.Publish Astrare to folder (Linux)">
     <configuration name="Publish Astrare to folder (Linux)" type="DotNetFolderPublish" factoryName="Publish to folder">
-      <riderPublish configuration="Release" platform="Any CPU" runtime="linux-x64" self_contained="true" target_folder="$PROJECT_DIR$/Astrare/bin/Release/net6.0/publish-linux" target_framework="net6.0" trim_unused_assemblies="true" uuid_high="1834748809605369082" uuid_low="-8010799515139196501" />
+      <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" runtime="linux-x64" target_folder="$PROJECT_DIR$/Astrare/bin/Release/net6.0/publish-linux" target_framework="net6.0" uuid_high="1834748809605369082" uuid_low="-8010799515139196501" />
       <method v="2" />
     </configuration>
     <configuration name="Publish Astrare to folder (Windows)" type="DotNetFolderPublish" factoryName="Publish to folder">
-      <riderPublish configuration="Release" platform="Any CPU" runtime="win-x64" self_contained="true" target_folder="$PROJECT_DIR$/Astrare/bin/Release/net6.0/publish-win" target_framework="net6.0" uuid_high="1834748809605369082" uuid_low="-8010799515139196501" />
+      <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" runtime="win-x64" target_folder="$PROJECT_DIR$/Astrare/bin/Release/net6.0/publish-win" target_framework="net6.0" uuid_high="1834748809605369082" uuid_low="-8010799515139196501" />
       <method v="2" />
     </configuration>
     <configuration name="Astrare" type="DotNetProject" factoryName=".NET Project">
@@ -130,7 +132,9 @@
       <workItem from="1656074021460" duration="2164000" />
       <workItem from="1660318946622" duration="320000" />
       <workItem from="1660335027921" duration="662000" />
-      <workItem from="1660570047050" duration="5709000" />
+      <workItem from="1660570047050" duration="6446000" />
+      <workItem from="1661161463330" duration="101000" />
+      <workItem from="1661509659927" duration="335000" />
     </task>
     <servers />
   </component>

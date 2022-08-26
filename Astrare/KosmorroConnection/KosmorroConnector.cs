@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -12,7 +13,7 @@ public static class KosmorroConnector
     public static GlobalData GetFromKosmorro(DateTime? date, decimal lat, decimal lon, int timezone, DataGetMode mode = DataGetMode.Default)
     {
         date ??= DateTime.Now;
-        var cmd = ("cd {/d} " + System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + $"/kosmorro-lite && {PythonHelper.GetPythonCommand()} kosmorro-lite -lat {lat.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -lon {lon.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -d " +
+        var cmd = ("cd {/d} " + Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + $"/kosmorro-lite && {PythonHelper.GetPythonCommand()} kosmorro-lite -lat {lat.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -lon {lon.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -d " +
             ((DateTime)date).ToString("yyyy-MM-dd") +
             " -t " + timezone);
         switch (mode)
@@ -24,16 +25,9 @@ public static class KosmorroConnector
                 cmd += " -ev -co";
                 break;
         }
-            
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            cmd = cmd.Replace("{/d}", "/d");
-        }
-        else
-        {
-            cmd = cmd.Replace(" {/d}", "");
-        }
+
+        cmd = cmd.Replace("{/d}", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "/d" : "");
 
         var json = ShellHelper.Bash(cmd).Replace("\"object\"", "\"aster\"");
         try
@@ -88,7 +82,7 @@ public static class KosmorroConnector
     {
         date ??= DateTime.Now;
         var cmd = ("cd {/d} " +
-                   System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
+                   Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) +
                    $"/scripts && {PythonHelper.GetPythonCommand()} iss.py -lat {lat.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -lon {lon.ToString(CultureInfo.InvariantCulture).Replace(',', '.')} -d " +
                    ((DateTime)date).ToString("yyyy-MM-dd") +
                    " -t " + timezone);
