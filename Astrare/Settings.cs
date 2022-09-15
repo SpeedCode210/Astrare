@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace Astrare;
@@ -21,9 +22,22 @@ public class Settings
         {
             if (_current != null)
                 return _current;
-            if (File.Exists(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/settings.json"))
+            string filename;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var result = JsonSerializer.Deserialize<Settings>(File.ReadAllText(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/settings.json"));
+                filename = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                           + "\\Astrare\\settings.json";
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                                          + "\\Astrare");
+            }
+            else
+            {
+                filename = Environment.GetEnvironmentVariable("HOME") + "/.astrare_settings";
+
+            }
+            if (File.Exists(filename))
+            {
+                var result = JsonSerializer.Deserialize<Settings>(File.ReadAllText(filename));
                 if (result != null)
                 {
                     _current = result;
@@ -37,11 +51,17 @@ public class Settings
 
     public void Save()
     {
-        File.WriteAllText(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/settings.json",JsonSerializer.Serialize(this));
-    }
-}
+        string filename;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            filename = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                       + "\\Astrare\\settings.json";
+        }
+        else
+        {
+            filename = Environment.GetEnvironmentVariable("HOME") + "/.astrare_settings";
 
-public enum Languages
-{
-    English
+        }
+        File.WriteAllText(filename,JsonSerializer.Serialize(this));
+    }
 }
