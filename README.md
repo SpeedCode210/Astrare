@@ -1,6 +1,6 @@
-# Astrare
+# ![Astrare](https://raw.githubusercontent.com/SpeedCode210/Astrare/main/Astrare/astrareLogo.png)
 
-![Astrare Logo](https://raw.githubusercontent.com/SpeedCode210/Astrare/main/Astrare/astrareLogo.png)
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/raoufouldali/astrare/package/astrare/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/raoufouldali/astrare/package/astrare/)
 
 Various tools for amateur astronomers !
 
